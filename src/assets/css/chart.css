@@ -1,0 +1,17 @@
+.chartContainer {
+    width: 25em;
+    height: calc(100% / 3 - 1em);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    #chart {
+        height: 100%;
+        /* background-image: url("@/assets/image/TEMP.png"); */
+        /* background-image: linear-gradient(to right, cyan 0.5%, var(--BLUE) 3%, black 45%, black 95%, var(--BLUE) 97%, cyan 99.5%); */
+        background-color: rgba(0, 0, 0, 0.75);
+        border: 2px solid cyan;
+      }
+}

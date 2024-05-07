@@ -74,17 +74,18 @@ function addViewer() {
 /* 可使用本地資源 */
 async function addGLTF() {
   try {
-    const resource = await Cesium.IonResource.fromAssetId(2559040); // remote model
-    const gltf = '/gltf/example.gltf'; // local model
+    // const MODEL_URI = await Cesium.IonResource.fromAssetId(2559040); // cesium ion model URL
+    // const MODEL_URI = process.env.VUE_APP_GLTF_PATH + process.env.VUE_APP_GLTF_NAME; // 正式 model URL
+    const MODEL_URI = process.env.VUE_APP_GLTF_PATH_LOCAL + process.env.VUE_APP_GLTF_NAME; // 本地 model URL
     const entity = viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(121.5994799498, 25.056333648, 0),
       model: {
-        uri: gltf,
+        uri: MODEL_URI,
       },
     });
     viewer.trackedEntity = entity;
     const destination = Cesium.Cartesian3.fromDegrees(121.59867013890916, 25.045, 500);
-    const orientation = new Cesium.HeadingPitchRange(0, -0.5, 100);
+    const orientation = new Cesium.HeadingPitchRange(0, -0.5, 1000);
     viewer.zoomTo(entity, orientation);
   } catch (error) {
     console.log(`[addGLTF() ERROR] : ${error}`);

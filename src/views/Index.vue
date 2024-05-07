@@ -3,12 +3,15 @@
     <div id="headerContainer">
       <Header />
     </div>
-    <div id="leftContainer"></div>
+    <div id="leftContainer">
+      <LeftChartPanel />
+    </div>
     <div id="cesiumContainer">
-      <Cesium />
+      <!-- <Cesium /> -->
     </div>
     <div id="rightContainer">
-      <!-- <Tree /> -->
+      <!-- <RightChartPanel /> -->
+      <Tree />
     </div>
     <div id="footerContainer">
       <Footer />
@@ -19,8 +22,12 @@
 <script setup>
 import Header from "@/components/Header.vue"
 import Tree from "@/components/Tree.vue"
+import LeftChartPanel from "@/components/LeftChartPanel.vue"
+import RightChartPanel from "@/components/RightChartPanel.vue"
 import Cesium from "@/components/Cesium.vue"
 import Footer from "@/components/Footer.vue"
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -37,13 +44,15 @@ import Footer from "@/components/Footer.vue"
 
   #leftContainer {
     position: absolute;
+    top: 50%;
     left: 0;
+    transform: translate(0, -50%);
   }
-  
+
   #cesiumContainer {
     height: 100%;
   }
-  
+
   #rightContainer {
     position: absolute;
     top: 50%;
