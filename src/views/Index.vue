@@ -7,7 +7,7 @@
       <LeftChartPanel />
     </div>
     <div id="cesiumContainer">
-      <!-- <Cesium /> -->
+      <Cesium />
     </div>
     <div id="rightContainer">
       <!-- <RightChartPanel /> -->
@@ -26,8 +26,6 @@ import LeftChartPanel from "@/components/LeftChartPanel.vue"
 import RightChartPanel from "@/components/RightChartPanel.vue"
 import Cesium from "@/components/Cesium.vue"
 import Footer from "@/components/Footer.vue"
-
-
 </script>
 
 <style lang="scss" scoped>
@@ -36,6 +34,7 @@ import Footer from "@/components/Footer.vue"
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-image: url("@/assets/image/background.png");
 
   #headerContainer {
     width: 100%;
