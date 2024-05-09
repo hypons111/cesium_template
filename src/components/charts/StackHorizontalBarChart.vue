@@ -1,5 +1,26 @@
 <template>
   <div id="stackHorizontalBarChart" class="chartContainer">
+    <div id="patternContainer">
+      <svg id="topPattern" class="pattern">
+        <polyline points="
+      1,39
+      1,20
+      20,1
+      170,1
+      185,10
+      335,10
+      350,1
+      377,1
+      399,20
+      399,39
+      399,225
+      380,243
+      20,243
+      1,225
+      1,20
+      " />
+      </svg>
+    </div>
     <div id="chart" ref="chartContainer"></div>
   </div>
 </template>
@@ -109,7 +130,7 @@ function setChart() {
     },
 
     series: fakeChartData.value.series,
-    
+
     textStyle: {
       color: 'white'
     }
@@ -122,4 +143,24 @@ onMounted(() => {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+#stackHorizontalBarChart {
+  position: relative;
+  overflow: hidden;
+
+  #patternContainer{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    stroke: cyan;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      stroke-width: 2;
+      fill: var(--BLUE);
+      fill-opacity: 0.75;
+    }
+  }
+}
+</style>

@@ -1,5 +1,7 @@
 <template>
-  <div id="cesium"></div>
+  <div id="cesium">
+    <div id="viewerContainer"></div>
+  </div>
 </template>
 
 <script setup>
@@ -22,7 +24,7 @@ onMounted(() => {
 })
 
 async function initial() {
-  window.viewer = await addViewer("cesiumContainer"); // 宣告 cesium viewer 實例
+  window.viewer = await addViewer("viewerContainer"); // 宣告 cesium viewer 實例
   // await addGLTF(); 
   await add3DTiles();
   tempTagArray.forEach(tag => {
@@ -36,7 +38,7 @@ async function initial() {
 function addViewer() {
   Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3OTgwYjIyNS0xNzlmLTQ0YWQtODRhMy1iYTAxOGRkZDQyMmYiLCJpZCI6MTk2Mzk1LCJpYXQiOjE3MTQxNDkyMDJ9.jnx-ICcOXNgxlZjN97uY3Rpdm4l0rHan8neh3fhK6RU"
 
-  const viewer = new Cesium.Viewer("cesium", {
+  const viewer = new Cesium.Viewer(container, {
     // imageryProvider: true, // 是否顯示地球圖片
     animation: false, // 是否顯示動畫控件
     baseLayerPicker: false, // 是否顯示基礎圖層選擇器
