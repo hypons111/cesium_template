@@ -1,27 +1,25 @@
 <template>
   <div id="stackHorizontalBarChart" class="chartContainer">
-    <div id="patternContainer">
+
+    <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
-        <polyline points="
-      1,39
-      1,20
-      20,1
-      170,1
-      185,10
-      335,10
-      350,1
-      377,1
-      399,20
-      399,39
-      399,225
-      380,243
-      20,243
-      1,225
-      1,20
-      " />
+        <polyline class="filled" points="1,1 15,1 1,15 1,1 15,1" /> <!-- 左上三角形 -->
+        <polyline class="filled" points="383,1 399,1 399,15 383,1 399,1" /> <!-- 右上三角形 -->
+        <polyline class="filled" points="177,1 186,6 334,6 343,1 177,1 186,6" /> <!-- 梯形 -->
+        <polyline points="1,39 1,20 20,1 170,1 185,10 335,10 350,1 377,1 399,20 399,39" /> <!-- 上框 -->
       </svg>
     </div>
+
     <div id="chart" ref="chartContainer"></div>
+
+    <div id="bottomPatternContainer" class="patternContainer">
+      <svg id="bottomPattern" class="pattern">
+        <polyline class="filled" points="1,25 1,39 15,39 1,25 1,39" /> <!-- 左下三角形 -->
+        <polyline class="filled" points="385,39 399,39 399,25 385,39 399,39" /> <!-- 右下三角形 -->
+        <polyline points="1,1 1,20 20,39 380,39 399,20 399,1" /> <!-- 下框 -->
+      </svg>
+    </div>
+
   </div>
 </template>
 
@@ -31,7 +29,7 @@ import * as echarts from 'echarts';
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
-  title: "標題",
+  title: "標題-標題-標題",
   yData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   series: [
     {
@@ -87,7 +85,7 @@ function setChart() {
   chart.setOption({
     title: {
       top: '3%',
-      left: '3%',
+      left: '5%',
       text: fakeChartData.value.title,
       textStyle: {
         color: 'white'
@@ -144,23 +142,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-#stackHorizontalBarChart {
-  position: relative;
-  overflow: hidden;
-
-  #patternContainer{
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    stroke: cyan;
-
-    svg {
-      width: 100%;
-      height: 100%;
-      stroke-width: 2;
-      fill: var(--BLUE);
-      fill-opacity: 0.75;
-    }
-  }
-}
+#stackHorizontalBarChart {}
 </style>

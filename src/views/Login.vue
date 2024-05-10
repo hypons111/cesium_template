@@ -76,7 +76,7 @@ function login() {
                     padding: 6px;
                     flex-grow: 1;
                     border-radius: 0.25em;
-                    background-color: white;
+                    background-color: var(--WHITE);
                 }
 
                 &:first-child {
@@ -88,7 +88,7 @@ function login() {
         button {
             width: 100%;
             height: 2em;
-            color: white;
+            color: var(--WHITE);
             font-size: 1.25em;
             font-weight: bolder;
             border-radius: 0.25em;

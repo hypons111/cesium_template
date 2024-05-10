@@ -23,7 +23,7 @@ const projectName = ref(process.env.VUE_APP_PROJECT_NAME)
     top: 5px;
     left: 50%;
     transform: translate(-50%, 0);
-    color: white;
+    color: var(--WHITE);
     font-size: 2em;
     font-weight: 900;
     font-weight: bolder;

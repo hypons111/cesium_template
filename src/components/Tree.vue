@@ -140,7 +140,7 @@ function remove(node, data) {
 
   .el-tree {
     background: none;
-    color: white;
+    color: var(--WHITE);
 
     .custom-tree-node {
       flex: 1;

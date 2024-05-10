@@ -3,16 +3,20 @@
     <div id="headerContainer">
       <Header />
     </div>
-    <div id="leftContainer">
-      <LeftChartPanel />
-    </div>
+
     <div id="cesiumContainer">
       <Cesium />
     </div>
-    <div id="rightContainer">
-      <!-- <RightChartPanel /> -->
-      <Tree />
+
+    <div id="leftContainer">
+      <LeftChartPanel />
     </div>
+
+    <div id="rightContainer">
+      <RightChartPanel />
+      <!-- <Tree /> -->
+    </div>
+
     <div id="footerContainer">
       <Footer />
     </div>
@@ -26,6 +30,13 @@ import LeftChartPanel from "@/components/LeftChartPanel.vue"
 import RightChartPanel from "@/components/RightChartPanel.vue"
 import Cesium from "@/components/Cesium.vue"
 import Footer from "@/components/Footer.vue"
+import { computed } from "vue"
+import { useStore } from "vuex"
+
+const store = useStore();
+const currentView = computed(() => store.getters.CURRENT_VIEW);
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -39,6 +50,7 @@ import Footer from "@/components/Footer.vue"
   #headerContainer {
     width: 100%;
     position: absolute;
+    // border: 1px solid red;
   }
 
   #leftContainer {
@@ -46,10 +58,7 @@ import Footer from "@/components/Footer.vue"
     top: 50%;
     left: 0;
     transform: translate(0, -50%);
-  }
-
-  #cesiumContainer {
-    height: 100%;
+    // border: 1px solid red;
   }
 
   #rightContainer {
@@ -59,10 +68,15 @@ import Footer from "@/components/Footer.vue"
     transform: translate(0, -50%);
   }
 
+  #cesiumContainer {
+    height: 100%;
+  }
+
   #footerContainer {
     width: 100%;
     position: absolute;
     bottom: 0;
+    // border: 1px solid red;
   }
 }
 </style>

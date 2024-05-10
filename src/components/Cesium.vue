@@ -1,5 +1,7 @@
 <template>
   <div id="cesium">
+    <!-- <button id="patrolBtn" @click="move1">rotata Left</button>
+    <button id="patrolBtn" @click="move2">rotata Right</button> -->
     <div id="viewerContainer"></div>
   </div>
 </template>
@@ -28,14 +30,14 @@ async function initial() {
   // await addGLTF(); 
   await add3DTiles();
   tempTagArray.forEach(tag => {
-    addLabel(tag);
-    addBillBoard(tag);
+    // addLabel(tag);
+    // addBillBoard(tag);
     addMouseClickListeners();
   })
 }
 
 // 建立 viewer
-function addViewer() {
+function addViewer(container) {
   Cesium.Ion.defaultAccessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3OTgwYjIyNS0xNzlmLTQ0YWQtODRhMy1iYTAxOGRkZDQyMmYiLCJpZCI6MTk2Mzk1LCJpYXQiOjE3MTQxNDkyMDJ9.jnx-ICcOXNgxlZjN97uY3Rpdm4l0rHan8neh3fhK6RU"
 
   const viewer = new Cesium.Viewer(container, {
@@ -116,19 +118,21 @@ async function add3DTiles() {
     )
 
     // 定義初始鏡頭位置
-    const destination = Cesium.Cartesian3.fromDegrees(121.59867013890916, 25.045, 500); // TCT
-    // const destination = Cesium.Cartesian3.fromDegrees(121.5994799498, 25.056333648, 500); // 漁港
+    // const destination = Cesium.Cartesian3.fromDegrees(121.59867013890916, 25.045, 500); // TCT
+    // const destination = Cesium.Cartesian3.fromDegrees(121.534, 25.2865, 350); // 漁港
     const orientation = new Cesium.HeadingPitchRange(0, -0.5, 1000);
 
     // 方法一 : flyTo 初始鏡頭位置
-    viewer.scene.camera.flyTo({
-      destination: destination,
-      orientation: orientation,
-      duration: 2,
-    });
+    // viewer.scene.camera.flyTo({
+    //   destination: destination,
+    //   orientation: orientation,
+    //   duration: 2,
+    // });
 
     // 方法二: zoomTo 模型
-    // viewer.zoomTo(sample_1_3DTiles, orientation);
+    viewer.zoomTo(sample_1_3DTiles, orientation);
+
+    // patrolZoom();
 
   } catch (error) {
     console.log(`[add3DTiles() ERROR] : ${error}`);
@@ -173,7 +177,7 @@ async function addMouseClickListeners() {
 
   // left click
   clickListener.setInputAction(click => {
-    console.log("LEFT CLICK")
+    console.log("LEFT CLICK");
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
   // right click 顯示 X,Y,Z,H,P,R
@@ -186,6 +190,61 @@ async function addMouseClickListeners() {
     console.log(`Longitude: ${longitude}, Latitude: ${latitude}, Height: ${height}`);
   }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
+
+const patrolRoute = {
+  counter: 0,
+  checkPoint: [
+    {
+      x: 121,   // Longitude(視點經度)：0本初子午線、正數向東、負數向西。
+      y: 25,    // Latitude(視點緯度)：0赤道、正數向北、負數向南。
+      z: 10000, // Zoom(視點縮放)：
+      h: 180,   // Heading(視點水平角度)：0向北、90向東、180向南、270向西。
+      p: 0,     // Pitch(視點水垂直角度)：0地平線、90向天、-90向地。
+      r: 1      // Range(視點與目標之間距離)：
+    },
+    {
+      x: 121,
+      y: 25,
+      z: 10000,
+      h: 180,
+      p: 0,
+      r: 1
+    },
+  ]
+}
+
+function patrolZoom() {
+  const x = 121.61791056421559; // longitude：0本初子午線、正數向東、負數向西。
+  const y = 25.067130541767458; // latitude：0赤道、正數向北、負數向南。
+  const z = 1; // 距離
+  const h = 180; // 0向北、90向東、180向南、270向西。
+  const p = 0; // 0地平線、90向天、-90向地。
+  const r = 1; // 距離
+
+  // Lock camera to a point
+  const destination = Cesium.Cartesian3.fromDegrees(x, y, z);
+  var transform = Cesium.Transforms.eastNorthUpToFixedFrame(destination);
+  viewer.scene.camera.lookAtTransform(transform, new Cesium.HeadingPitchRange(Cesium.Math.toRadians(h), Cesium.Math.toRadians(p), r));
+
+}
+function move1() {
+  const degrees = 15;
+  viewer.scene.camera.rotate(viewer.scene.camera.up, Cesium.Math.toRadians(degrees));
+  viewer.clock.onTick.addEventListener(clock => {
+    // viewer.scene.camera.rotateRight(0.001);
+    // viewer.scene.camera.moveForward(0.01);
+  });
+}
+function move2() {
+  const degrees = -15;
+    viewer.scene.camera.rotate(viewer.scene.camera.up, Cesium.Math.toRadians(degrees));
+    viewer.clock.onTick.addEventListener(clock => {
+    // viewer.scene.camera.rotateRight(0.001);
+    // viewer.scene.camera.moveForward(0.01);
+  });
+}
+
+
 </script>
 
 
@@ -197,5 +256,12 @@ async function addMouseClickListeners() {
 
 #cesium :deep(canvas) {
   width: 100%;
+}
+
+
+#patrolBtn {
+  position: relative;
+  top: 50%;
+  left: 50%;
 }
 </style>

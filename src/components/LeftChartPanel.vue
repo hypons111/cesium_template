@@ -1,5 +1,5 @@
 <template>
-  <div id="LeftChartPanel">
+  <div id="LeftChartPanel" class="panel">
     <stackHorizontalBarChart />
     <DoughnutChart />
     <StackedLineChart />
@@ -13,14 +13,4 @@ import StackedLineChart from "@/components/charts/StackedLineChart.vue"
 import "@/assets/css/chart.css"
 </script>
 
-<style>
-#LeftChartPanel {
-  width: 25em;
-  height: calc(100vh - 6em - 2em);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-</style>
+<style></style>
