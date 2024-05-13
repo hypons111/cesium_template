@@ -6,8 +6,8 @@
 
 <script setup>
 class DateTime {
-  constructor() {
-    this.weekday = ["Sun.", "Mon.", "Tue.", "Wed.", "Thur.", "Fri.", "Sat."];
+  constructor() {4
+    this.weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     this.Date = new Date();
     this.year = this.Date.getFullYear();
     this.month = (this.Date.getMonth() + 1).toString().padStart(2, '0');
@@ -26,12 +26,12 @@ class DateTime {
     return `${this.hour}:${this.minute}:${this.second}`;
   }
 
-  getWeek() {
+  getWeekday() {
     return this.weekday[this.day];
   }
 
   getDatetime() {
-    return `${this.year}-${this.month}-${this.date} ${this.hour}:${this.minute}:${this.second} ${this.getWeek()}`;
+    return `${this.year}-${this.month}-${this.date} ${this.hour}:${this.minute}:${this.second} ${this.getWeekday()}`;
   }
 }
 
@@ -44,7 +44,7 @@ const clock = ref("");
 function getRealTime() {
   intervalSwitch = setInterval(() => {
     const DT = new DateTime();
-    clock.value = `${DT.getDate()} ${DT.getTime()} ${DT.getWeek()}`;
+    clock.value = `${DT.getDatetime()}`;
   }, 1000);
 }
 
@@ -60,11 +60,10 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 #clockContainer {
-  width: 100%;
+  width: fit-content;
   height: 1em;
-  font-size: 1em;
+  font-size: 1.25em;
   color: var(--GRAY_1);
   font-family: 'DSDigital';
-  border: 1px solid red;
 }
 </style>

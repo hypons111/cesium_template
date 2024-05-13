@@ -1,28 +1,43 @@
 <template>
   <div id="header">
-    <div id="leftAside" class="aside">
-      <el-select v-model="value" placeholder="OPTION">
-        <el-option v-for="item in leftAsideOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-      </el-select>
+
+    <div id="headerRow_1" class="headerRow">
+
+      <div id="headerAsideLeft" class="headerAside">
+        <el-select class="el_select" v-model="value" placeholder="OPTION">
+          <el-option v-for="item in headerAsideLeftOptions" :key="item.value" :label="item.label"
+            :value="item.value"></el-option>
+        </el-select>
+      </div>
+
+      <div id="headerMain">
+        <p>{{ projectName }}</p>
+      </div>
+
+      <div id="headerAsideRight" class="headerAside">
+        <el-select class="el_select" v-model="value" placeholder="OPTION">
+          <el-option v-for="item in headerAsideRightOptions" :key="item.value" :label="item.label"
+            :value="item.value"></el-option>
+        </el-select>
+      </div>
+
     </div>
-    <div id="projectTitle">
-      <p>{{ projectName }}</p>
+
+    <div id="headerRow_2" class="headerRow">
+      <Clock id="clock" />
+      <Marquee id="marquee" />
     </div>
-    <div id="rightAside" class="aside">
-      <Clock />
-      <el-select v-model="value" placeholder="OPTION">
-        <el-option v-for="item in rightAsideOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-      </el-select>
-    </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue"
-import Clock from "@/components/Clock.vue"
-const projectName = ref(process.env.VUE_APP_PROJECT_NAME)
+import { ref } from "vue";
+import Clock from "@/components/tools/Clock.vue";
+import Marquee from "@/components/tools/Marquee.vue";
+const projectName = ref(process.env.VUE_APP_PROJECT_NAME);
 
-const leftAsideOptions = [{
+const headerAsideLeftOptions = [{
   value: '0',
   label: 'option_1'
 }, {
@@ -39,7 +54,7 @@ const leftAsideOptions = [{
   label: 'option_5'
 }]
 
-const rightAsideOptions = [{
+const headerAsideRightOptions = [{
   value: '0',
   label: '模型復原'
 }, {
@@ -57,34 +72,113 @@ const rightAsideOptions = [{
 <style lang="scss" scoped>
 #header {
   width: 100%;
-  height: 3em;
+  height: 6em;
   display: flex;
-  justify-content: space-between;
-  text-align: center;
+  flex-direction: column;
   z-index: 10;
 
-  #projectTitle {
-    width: 50%;
-    height: 100%;
-    border: 1px solid lime;
-    background-image: url("../assets/image/header.png");
-    background-size: contain;
-    background-position: center center;
+  .headerRow {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
 
-    p {
-      display: inline-block;
-      color: var(--WHITE);
-      font-size: 1.75em;
-      font-weight: 900;
-      font-weight: bolder;
-      line-height: 1.5em;
+  #headerRow_1 {
+    height: 3em;
+
+    #headerMain {
+      width: 60%;
+      height: 100%;
+      position: relative;
+      background-image: url("../assets/image/header.png");
+      background-size: cover;
+      background-position: center top;
+      background-repeat: no-repeat;
+      // border: 1px solid cyan;
+
+      p {
+        display: inline-block;
+        color: var(--WHITE);
+        font-size: 1.75em;
+        font-weight: 900;
+        font-weight: bolder;
+        line-height: 1.5em;
+      }
     }
 
+    .headerAside {
+      display: flex;
+      align-items: center;
+      width: 20%;
+      padding: 0 1em;
+      // border: 1px solid cyan;
+
+      .el-select__wrapper {
+        // $--color-primary: teal;
+        border: 1px solid cyan !important;
+      }
+    }
   }
 
-  .aside {
-    width: 25%;
-    border: 1px solid gold;
+  #headerRow_2 {
+    height: 3em;
+    flex-direction: column;
+    // border: 1px solid cyan;
+
+    #clock {
+    }
+
+    #marqueeContainer {
+      width: calc(100vw - 25em - 25em - 2em);
+      height: 2em;
+      border-left: thick double red;
+      border-right: thick double red;
+      overflow: hidden;
+      animation: fresh 1s linear infinite;
+
+      @keyframes fresh {
+        0% {
+          border-left: thick double rgba(#ffffff, 0);
+          border-right: thick double rgba(#ffffff, 0);
+        }
+
+        50% {
+          border-left: thick double red;
+          border-right: thick double red;
+        }
+
+        100% {
+          border-left: thick double rgba(#ffffff, 0);
+          border-right: thick double rgba(#ffffff, 0);
+        }
+      }
+
+      #marqueeContents {
+        width: fit-content;
+        height: 100%;
+        font-size: 1.5em;
+        color: red;
+        line-height: 1.25em;
+        text-wrap: nowrap;
+        animation: slide 20s linear infinite;
+
+        @keyframes slide {
+          0% {
+            transform: translatex(100%)
+          }
+  
+          100% {
+            transform: translatex(-100%)
+          }
+        }
+      }
+    }
   }
+
+
+
+
 }
 </style>
