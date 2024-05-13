@@ -5,7 +5,7 @@
     </div>
 
     <div id="cesiumContainer">
-      <Cesium />
+      <!-- <Cesium /> -->
     </div>
 
     <div id="leftContainer">

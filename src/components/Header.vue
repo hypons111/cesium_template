@@ -5,9 +5,10 @@
 
       <div id="headerAsideLeft" class="headerAside">
         <el-select class="el_select" v-model="value" placeholder="OPTION">
-          <el-option v-for="item in headerAsideLeftOptions" :key="item.value" :label="item.label"
+          <el-option class="el_option" v-for="item in headerAsideLeftOptions" :key="item.value" :label="item.label"
             :value="item.value"></el-option>
         </el-select>
+
       </div>
 
       <div id="headerMain">
@@ -109,15 +110,29 @@ const headerAsideRightOptions = [{
     }
 
     .headerAside {
+      position: relative;
       display: flex;
       align-items: center;
       width: 20%;
       padding: 0 1em;
-      // border: 1px solid cyan;
+      // border: 1px solid red;
 
-      .el-select__wrapper {
-        // $--color-primary: teal;
-        border: 1px solid cyan !important;
+      ::v-deep .el-select__wrapper {
+        font-size: 1em;
+        font-weight: bold;
+        padding: 0.75em;
+
+        background-color: var(--BLUE_4);
+        box-shadow: none;
+        border: 1px solid cyan;
+        border-radius: 0;
+
+        // border-bottom: 2px solid cyan;
+
+        * {
+          color: var(--WHITE);
+        }
+
       }
     }
   }
@@ -125,60 +140,19 @@ const headerAsideRightOptions = [{
   #headerRow_2 {
     height: 3em;
     flex-direction: column;
-    // border: 1px solid cyan;
 
-    #clock {
-    }
+    #clock {}
 
-    #marqueeContainer {
-      width: calc(100vw - 25em - 25em - 2em);
-      height: 2em;
-      border-left: thick double red;
-      border-right: thick double red;
-      overflow: hidden;
-      animation: fresh 1s linear infinite;
-
-      @keyframes fresh {
-        0% {
-          border-left: thick double rgba(#ffffff, 0);
-          border-right: thick double rgba(#ffffff, 0);
-        }
-
-        50% {
-          border-left: thick double red;
-          border-right: thick double red;
-        }
-
-        100% {
-          border-left: thick double rgba(#ffffff, 0);
-          border-right: thick double rgba(#ffffff, 0);
-        }
-      }
-
-      #marqueeContents {
-        width: fit-content;
-        height: 100%;
-        font-size: 1.5em;
-        color: red;
-        line-height: 1.25em;
-        text-wrap: nowrap;
-        animation: slide 20s linear infinite;
-
-        @keyframes slide {
-          0% {
-            transform: translatex(100%)
-          }
-  
-          100% {
-            transform: translatex(-100%)
-          }
-        }
-      }
-    }
+    #marqueeContainer {}
   }
+}
+</style>
 
-
-
-
+<style lang="scss">
+.el-popper {
+  * {
+    color: var(--WHITE);
+    background-color: var(--BLUE_4);
+  }
 }
 </style>

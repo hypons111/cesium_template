@@ -1,6 +1,7 @@
 <template>
   <div id="clock">
-    <div id="clockContainer">{{ clock }}</div>
+    <!-- <div id="clockContainer">{{ clock }}</div> -->
+    <div id="clockContainer">{{ date }}&emsp;{{ time }}&emsp;{{ day }}</div>
   </div>
 </template>
 
@@ -26,12 +27,12 @@ class DateTime {
     return `${this.hour}:${this.minute}:${this.second}`;
   }
 
-  getWeekday() {
+  getDay() {
     return this.weekday[this.day];
   }
 
   getDatetime() {
-    return `${this.year}-${this.month}-${this.date} ${this.hour}:${this.minute}:${this.second} ${this.getWeekday()}`;
+    return `${this.year}-${this.month}-${this.date} ${this.hour}:${this.minute}:${this.second} ${this.getDay()}`;
   }
 }
 
@@ -40,11 +41,17 @@ import '@/assets/font/DSfont.css'
 
 let intervalSwitch;
 const clock = ref("");
+const time = ref("");
+const date = ref("");
+const day = ref("");
 
 function getRealTime() {
   intervalSwitch = setInterval(() => {
     const DT = new DateTime();
     clock.value = `${DT.getDatetime()}`;
+    date.value = `${DT.getDate()}`;
+    time.value = `${DT.getTime()}`;
+    day.value = `${DT.getDay()}`;
   }, 1000);
 }
 
