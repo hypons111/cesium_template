@@ -1,13 +1,17 @@
 <template>
   <div id="clock">
     <!-- <div id="clockContainer">{{ clock }}</div> -->
-    <div id="clockContainer">{{ date }}&emsp;{{ time }}&emsp;{{ day }}</div>
+    <div id="clockContainer">
+      <span>{{ date }}</span>
+      <span>{{ time }}</span>
+      <span>{{ day }}</span>
+    </div>
   </div>
 </template>
 
 <script setup>
 class DateTime {
-  constructor() {4
+  constructor() {
     this.weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     this.Date = new Date();
     this.year = this.Date.getFullYear();
@@ -37,7 +41,7 @@ class DateTime {
 }
 
 import { ref, onMounted, onUnmounted } from "vue"
-import '@/assets/font/DSfont.css' 
+import '@/assets/font/DSfont.css'
 
 let intervalSwitch;
 const clock = ref("");
@@ -68,9 +72,14 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 #clockContainer {
   width: fit-content;
-  height: 1em;
+  height: 1.25em;
+  line-height: 1.25em;
   font-size: 1.25em;
   color: var(--GRAY_1);
   font-family: 'DSDigital';
+
+  span:nth-child(2) {
+    margin: 0 0.5em;
+  }
 }
 </style>

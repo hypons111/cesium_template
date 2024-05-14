@@ -73,7 +73,7 @@ const headerAsideRightOptions = [{
 <style lang="scss" scoped>
 #header {
   width: 100%;
-  height: 6em;
+  height: 6.5em;
   display: flex;
   flex-direction: column;
   z-index: 10;
@@ -94,8 +94,8 @@ const headerAsideRightOptions = [{
       height: 100%;
       position: relative;
       background-image: url("../assets/image/header.png");
-      background-size: cover;
-      background-position: center top;
+      background-size: 100% 100%;
+      background-position: center center;
       background-repeat: no-repeat;
       // border: 1px solid cyan;
 
@@ -127,8 +127,6 @@ const headerAsideRightOptions = [{
         border: 1px solid cyan;
         border-radius: 0;
 
-        // border-bottom: 2px solid cyan;
-
         * {
           color: var(--WHITE);
         }
@@ -138,7 +136,7 @@ const headerAsideRightOptions = [{
   }
 
   #headerRow_2 {
-    height: 3em;
+    height: 3.5em;
     flex-direction: column;
 
     #clock {}
