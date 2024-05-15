@@ -1,35 +1,89 @@
 import BLUE_TAG from "@/assets/image/blue.png";
 import BROWN_TAG from "@/assets/image/brown.png";
 
+// 要載入的 ion 模型
 const _3DTilesArray = [2557681, 2557680];
 
-const _3DTilesSettings = {
-  showEarth: true,
+const settings = {
   useGoogleMap: false, // 是否使用 google map
-  zoomToModel: false,
+  showEarth: false, // 是否顯示地球
+  backgroundColor: "BLACK", // 要大寫, 要使用 Cesium.Color 可使用的顏色
 
-  originCamera : {
-    x: 121.598,
-    y: 25.045,
-    z: 500,
-    h: 0, // heading
-    p: -0.5, // pitch
-    r: 1000, // range
+  model: {
+    modelType: "ion", // "local" / "ion"
   },
 
-  zoomModel: {
-    modelOrigin: "default", // "default" / "ion"
-    zoomType: "fly", // "default" / "fly" /
+  camera: {
+    /* 座標 */
+
+    // 富基漁港 x: 121.534, y: 25.284, z: 500,
+    coordinate: {
+      x: 121.598, // 數字大=向右移動, 只會在經度移動, 不會受視度影響
+      y: 25.045,// 數字大=向下移動, 只會在緯度移動, 不會受視度影響
+      z: 500, // 與地面距離
+      h: 0, // heading 橫向視線角度
+      p: -0.5, // pitch 緃向視線角度
+      r: 0, // roll 地平線角度
+    },
+
+    zoomType: "fly", // "set" / "fly" /
+    flyDuration: 2, // flyTo 持續幾秒
+    offset: 20, 
+    
+    /* "model" 鏡頭會自動切換到模型位置 */
+    /* "coordinate" 鏡頭會切換到座標 */
+    /* settings.showEarth = false 時會無視"coordinate", 切換到模型位置 */
+    zoomTo: "coordinate", // "model" / "coordinate"  
   },
+
+  patrol: {
+    /* 巡邏起點座標 */
+    coordinate : {
+      x: 121.59, // 數字大=向右移動, 只會在經度移動, 不會受視度影響
+      y: 25.056, // 數字大=向下移動, 只會在緯度移動, 不會受視度影響
+      z: 2, // 與地面距離
+      h: 1.55, // heading 橫向視線角度
+      p: 0, // pitch 緃向視線角度
+      r: 0, // roll 地平線角度
+    },
+    
+    /* [ 方向(正數轉左, 負數轉右) , 前進距離 ] */
+    route : [
+      [0, 50],
+      [90, 25],
+      [-90, 10]
+    ]
+  }
 };
 
-const originCamera = {
-  x: 121.598,
-  y: 25.045,
-  z: 500,
-  h: 0, // heading
-  p: -0.5, // pitch
-  r: 1000, // range
+/* 設定 cesium viewer */
+/* 用 settings 控制 */
+const hideEarth = {
+  /*  cesium 地圖 */
+  imageryProvider: false, // 禁用影像圖層
+  terrainProvider: false, // 禁用地形圖層
+  globe: false, // 不顯示地球
+  skyBox: false, // 不顯示天空盒 包括太陽,月亮
+  skyAtmosphere: false, // 不顯示大氣層
+};
+
+/* 設定 cesium viewer */
+/* 用 settings 控制 */
+const hidePanel = {
+  /* 隱藏 cesium panel */
+  animation: false, // 隱藏動畫小部件
+  baseLayerPicker: false, // 隱藏底圖選擇器
+  fullscreenButton: false, // 隱藏全屏按鈕
+  vrButton: false, // 顯示 VR 模式按鈕，預設為 false
+  geocoder: false, // 隱藏地理編碼器
+  homeButton: false, // 隱藏首頁按鈕
+  infoBox: false, // 隱藏信息框
+  sceneModePicker: false, // 隱藏場景模式切換按鈕
+  selectionIndicator: false, // 隱藏選擇指示器
+  timeline: false, // 隱藏時間軸
+  navigationHelpButton: false, // 隱藏導航幫助按鈕
+  navigationInstructionsInitiallyVisible: false, // 預設顯示導航說明，預設為 true
+  creditContainer: document.createElement("div"), // 隱藏版權信息
 };
 
 /* label 是文字 */
@@ -79,17 +133,4 @@ const tagsArray = [
   },
 ];
 
-/* [ 方向(正數轉左, 負數轉右) , 前進距離 ] */
-const patrolSpotsArray = [
-  [0, 50],
-  [90, 25],
-  [-90, 10],
-];
-
-export {
-  _3DTilesArray,
-  _3DTilesSettings,
-//   originCamera,
-  tagsArray,
-  patrolSpotsArray,
-};
+export { settings, hidePanel, hideEarth, _3DTilesArray, tagsArray };
