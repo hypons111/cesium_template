@@ -1,24 +1,24 @@
 <template>
   <div id="rootContainer">
     <div id="headerContainer">
-      <Header />
+      <!-- <Header /> -->
     </div>
 
     <div id="cesiumContainer">
-      <!-- <Cesium /> -->
+      <Cesium />
     </div>
 
     <div id="leftContainer">
-      <LeftChartPanel />
+      <!-- <LeftChartPanel /> -->
     </div>
 
     <div id="rightContainer">
-      <RightChartPanel />
+      <!-- <RightChartPanel /> -->
       <!-- <Tree /> -->
     </div>
 
     <div id="footerContainer">
-      <Footer />
+      <!-- <Footer /> -->
     </div>
   </div>
 </template>

@@ -55,7 +55,7 @@ async function add3DTiles() {
     let primitives = undefined;
     let destination = undefined;
     let orientation = new Cesium.HeadingPitchRange(camera.coordinate.h, camera.coordinate.p, camera.coordinate.r);
-    
+
     /* 是否使用 google map */
     /* 請在 cesiumConfig.js 設定 */
     if (settings.useGoogleMap) {
@@ -66,11 +66,18 @@ async function add3DTiles() {
 
     /* 使用 本地/ion 模型 */
     /* 請在 cesiumConfig.js 設定 */
-
     if (settings.model.modelType === "local") {
       for (const model of settings.model.localModalArray) {
-        const tileset = await Cesium.Cesium3DTileset.fromUrl(`/3DTiles/${model}/tileset.json`); // local model
+        const tileset = await Cesium.Cesium3DTileset.fromUrl(`/3DTiles/${model.name}/tileset.json`); // local model
         primitives = viewer.scene.primitives.add(tileset);
+
+        const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
+        const original = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0);
+        const offset = Cesium.Cartesian3.fromDegrees(model.x, model.y, model.z);
+        const translation = Cesium.Cartesian3.subtract(offset, original, new Cesium.Cartesian3());
+
+        tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+
       };
     } else if (settings.model.modelType === "ion") {
       for (const model of settings.model.ionModalArray) {
@@ -88,7 +95,7 @@ async function add3DTiles() {
       destination = Cesium.Cartesian3.fromDegrees(camera.coordinate.x, camera.coordinate.y, camera.coordinate.z); // zoom 的位置, 可以是 model / Cartesian座標
     }
 
-    /* 鏡頭使用 set.fly 方法移動 */
+    /* 鏡頭使用 set/fly 方法移動 */
     /* 請在 cesiumConfig.js 設定 */
     if (camera.zoomType === "set") {
       let offset = primitives.boundingSphere.radius * camera.setOffset

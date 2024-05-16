@@ -1,23 +1,53 @@
 import BLUE_TAG from "@/assets/image/blue.png";
 import BROWN_TAG from "@/assets/image/brown.png";
 
+/*
+  `viewer`
+    1. `showEarth` 設定是否顯示地球
+    2. 如果不顯示地球可以用 `backgroundColor` 設定背景顏色
+
+  `model`
+    1. `useGoogleMap` 設定是否使用 google map
+    2. `modelType` 設定模型來源
+    3.1 `localModalArray`
+    3.2 `ionModalArray`
+*/
 
 
 const settings = {
   viewer: {
-    showEarth: true, // 是否顯示地球
+    showEarth: true, // true/false 
     backgroundColor: "BLACK", // 要大寫, 要使用 Cesium.Color 可使用的顏色
   },
 
   model: {
-    modelType: "local", // "local" / "ion"
     useGoogleMap: false, // 是否使用 ion google map
+    modelType: "local", // "local" / "ion"
 
     // 要載入的 local 模型
-    localModalArray : ["building", "floor"], // 暫時載入一個以上 local 模型會重疉顯示
+    localModalArray: [
+      {
+        name: "building",
+        x: 121.56451743862726,
+        y: 25.034180117330443,
+        z: 0,
+        h: 0, // heading 橫向視線角度
+        p: -0.5, // pitch 緃向視線角度
+        r: 0, // roll 地平線角度
+      },
+      {
+        name: "floor",
+        x: 121.564,
+        y: 25.034,
+        z: 0,
+        h: 0, // heading 橫向視線角度
+        p: -0.5, // pitch 緃向視線角度
+        r: 0, // roll 地平線角度
+      },
+    ],
 
     // 要載入的 ion 模型
-    ionModalArray : [2557681, 2557680]
+    ionModalArray: [2557681, 2557680],
   },
 
   camera: {
@@ -25,28 +55,27 @@ const settings = {
     coordinate: {
       // 富基漁港 x: 121.534, y: 25.284, z: 500,
       x: 121.598, // 數字大=向右移動, 只會在經度移動, 不會受視度影響
-      y: 25.045,// 數字大=向下移動, 只會在緯度移動, 不會受視度影響
+      y: 25.045, // 數字大=向下移動, 只會在緯度移動, 不會受視度影響
       z: 500, // 與地面距離
       h: 0, // heading 橫向視線角度
       p: -0.5, // pitch 緃向視線角度
       r: 0, // roll 地平線角度
     },
-    
-    zoomType: "fly", // "set" / "fly" /
+
+    zoomType: "set", // "set" / "fly" /
     setOffset: 10, // set 專用 offset 鏡頭 offset 距離
     flyOffset: [-250, 500, -250], // fly 專用 offset 鏡頭 offset 距離
-    flyDuration: 2, // fly 專用 flyTo 效果持續秒數
+    flyDuration: 1, // fly 專用 flyTo 效果持續秒數
 
-    
     /* "model" 鏡頭會自動切換到模型位置 */
     /* "coordinate" 鏡頭會切換到座標 */
     /* settings.showEarth = false 時會無視"coordinate", 切換到模型位置 */
-    zoomTo: "model", // "model" / "coordinate"  
+    zoomTo: "model", // "model" / "coordinate"
   },
 
   patrol: {
     /* 巡邏起點座標 */
-    coordinate : {
+    coordinate: {
       x: 121.59, // 數字大=向右移動, 只會在經度移動, 不會受視度影響
       y: 25.056, // 數字大=向下移動, 只會在緯度移動, 不會受視度影響
       z: 2, // 與地面距離
@@ -54,14 +83,14 @@ const settings = {
       p: 0, // pitch 緃向視線角度
       r: 0, // roll 地平線角度
     },
-    
+
     /* [ 方向(正數轉左, 負數轉右) , 前進距離 ] */
-    route : [
+    route: [
       [0, 50],
       [90, 25],
-      [-90, 10]
-    ]
-  }
+      [-90, 10],
+    ],
+  },
 };
 
 /* 設定 cesium viewer */
