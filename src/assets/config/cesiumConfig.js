@@ -1,23 +1,29 @@
 import BLUE_TAG from "@/assets/image/blue.png";
 import BROWN_TAG from "@/assets/image/brown.png";
 
-// 要載入的 ion 模型
-const _3DTilesArray = [2557681, 2557680];
+
 
 const settings = {
-  useGoogleMap: false, // 是否使用 google map
-  showEarth: false, // 是否顯示地球
-  backgroundColor: "BLACK", // 要大寫, 要使用 Cesium.Color 可使用的顏色
+  viewer: {
+    showEarth: true, // 是否顯示地球
+    backgroundColor: "BLACK", // 要大寫, 要使用 Cesium.Color 可使用的顏色
+  },
 
   model: {
-    modelType: "ion", // "local" / "ion"
+    modelType: "local", // "local" / "ion"
+    useGoogleMap: false, // 是否使用 ion google map
+
+    // 要載入的 local 模型
+    localModalArray : ["building", "floor"], // 暫時載入一個以上 local 模型會重疉顯示
+
+    // 要載入的 ion 模型
+    ionModalArray : [2557681, 2557680]
   },
 
   camera: {
     /* 座標 */
-
-    // 富基漁港 x: 121.534, y: 25.284, z: 500,
     coordinate: {
+      // 富基漁港 x: 121.534, y: 25.284, z: 500,
       x: 121.598, // 數字大=向右移動, 只會在經度移動, 不會受視度影響
       y: 25.045,// 數字大=向下移動, 只會在緯度移動, 不會受視度影響
       z: 500, // 與地面距離
@@ -25,15 +31,17 @@ const settings = {
       p: -0.5, // pitch 緃向視線角度
       r: 0, // roll 地平線角度
     },
-
+    
     zoomType: "fly", // "set" / "fly" /
-    flyDuration: 2, // flyTo 持續幾秒
-    offset: 20, 
+    setOffset: 10, // set 專用 offset 鏡頭 offset 距離
+    flyOffset: [-250, 500, -250], // fly 專用 offset 鏡頭 offset 距離
+    flyDuration: 2, // fly 專用 flyTo 效果持續秒數
+
     
     /* "model" 鏡頭會自動切換到模型位置 */
     /* "coordinate" 鏡頭會切換到座標 */
     /* settings.showEarth = false 時會無視"coordinate", 切換到模型位置 */
-    zoomTo: "coordinate", // "model" / "coordinate"  
+    zoomTo: "model", // "model" / "coordinate"  
   },
 
   patrol: {
@@ -133,4 +141,4 @@ const tagsArray = [
   },
 ];
 
-export { settings, hidePanel, hideEarth, _3DTilesArray, tagsArray };
+export { settings, hidePanel, hideEarth, tagsArray };

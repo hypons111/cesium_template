@@ -8,7 +8,7 @@
 <script setup>
 import { onMounted } from "vue";
 import * as Cesium from "cesium";
-import { settings, hidePanel, hideEarth, _3DTilesArray, tagsArray } from "@/assets/config/cesiumConfig"
+import { settings, hidePanel, hideEarth, tagsArray } from "@/assets/config/cesiumConfig"
 
 onMounted(() => {
   initial();
@@ -30,18 +30,18 @@ function addViewer(container) {
   Cesium.Ion.defaultAccessToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3OTgwYjIyNS0xNzlmLTQ0YWQtODRhMy1iYTAxOGRkZDQyMmYiLCJpZCI6MTk2Mzk1LCJpYXQiOjE3MTQxNDkyMDJ9.jnx-ICcOXNgxlZjN97uY3Rpdm4l0rHan8neh3fhK6RU";
 
-  const viewerConfig = settings.showEarth === true ? hidePanel : { ...hidePanel, ...hideEarth };
+  const viewerConfig = settings.viewer.showEarth === true ? hidePanel : { ...hidePanel, ...hideEarth };
 
   const viewer = new Cesium.Viewer(container, viewerConfig);
-  viewer.scene.backgroundColor = Cesium.Color[settings.backgroundColor]; // 移除太空底圖後的背景顏色
+  viewer.scene.backgroundColor = Cesium.Color[settings.viewer.backgroundColor]; // 移除太空底圖後的背景顏色
   // viewer.scene.globe.baseColor = Cesium.Color.BLACK; // 移除地球底圖後的地球顏色
   // viewer.scene.screenSpaceCameraController.minimumZoomDistance = 5000000; // 限制視點的最近距離
   // viewer.scene.screenSpaceCameraController.maximumZoomDistance = 10000000; // 限制視點的最遠距離
   // viewer.scene.mode = Cesium.SceneMode.COLUMBUS_VIEW; // 使用 2.5D 模式
 
   /* 使用 google 地圖時, 關閉 bing 地圖, 可加快載入 */
-  if (settings.useGoogleMap) {
-    viewer.scene.terrainProvider = settings.useGoogleMap;
+  if (settings.model.useGoogleMap) {
+    viewer.scene.terrainProvider = settings.model.useGoogleMap;
   }
   return viewer;
 }
@@ -55,8 +55,7 @@ async function add3DTiles() {
     let primitives = undefined;
     let destination = undefined;
     let orientation = new Cesium.HeadingPitchRange(camera.coordinate.h, camera.coordinate.p, camera.coordinate.r);
-    let offest = 0;
-
+    
     /* 是否使用 google map */
     /* 請在 cesiumConfig.js 設定 */
     if (settings.useGoogleMap) {
@@ -67,11 +66,14 @@ async function add3DTiles() {
 
     /* 使用 本地/ion 模型 */
     /* 請在 cesiumConfig.js 設定 */
+
     if (settings.model.modelType === "local") {
-      const tileset = await Cesium.Cesium3DTileset.fromUrl('/3DTiles/New/tileset.json'); // local model
-      primitives = viewer.scene.primitives.add(tileset);
+      for (const model of settings.model.localModalArray) {
+        const tileset = await Cesium.Cesium3DTileset.fromUrl(`/3DTiles/${model}/tileset.json`); // local model
+        primitives = viewer.scene.primitives.add(tileset);
+      };
     } else if (settings.model.modelType === "ion") {
-      for (const model of _3DTilesArray) {
+      for (const model of settings.model.ionModalArray) {
         primitives = viewer.scene.primitives.add(
           await Cesium.Cesium3DTileset.fromIonAssetId(model) // ion model
         );
@@ -80,9 +82,8 @@ async function add3DTiles() {
 
     /* 鏡頭使用 模型/座標 */
     /* 請在 cesiumConfig.js 設定 */
-    if (camera.zoomTo === "model" || !settings.showEarth) {
+    if (camera.zoomTo === "model") {
       destination = primitives.boundingSphere.center; // 3D Tileset 包圍盒的中心位置
-      offest = primitives.boundingSphere.radius * camera.offset
     } else if (camera.zoomTo === "coordinate") {
       destination = Cesium.Cartesian3.fromDegrees(camera.coordinate.x, camera.coordinate.y, camera.coordinate.z); // zoom 的位置, 可以是 model / Cartesian座標
     }
@@ -90,12 +91,20 @@ async function add3DTiles() {
     /* 鏡頭使用 set.fly 方法移動 */
     /* 請在 cesiumConfig.js 設定 */
     if (camera.zoomType === "set") {
+      let offset = primitives.boundingSphere.radius * camera.setOffset
       viewer.camera.setView({
         destination: destination,
         orientation: orientation,
       });
-      viewer.camera.moveBackward(offest); // 向後移動相機，設定距離
+      viewer.camera.moveBackward(offset); // 向後移動相機，設定距離
     } else if (camera.zoomType === "fly") {
+      /* Cartesian3 相加函數 */
+      /* 3D Tileset 包圍盒的中心位 + offset */
+      destination = Cesium.Cartesian3.add(
+        destination,
+        new Cesium.Cartesian3(camera.flyOffset[0], camera.flyOffset[1], camera.flyOffset[2]),
+        new Cesium.Cartesian3() // 這個參數不要刪除, 可提高效能
+      );
       await viewer.scene.camera.flyTo({
         destination: destination,
         orientation: orientation,
