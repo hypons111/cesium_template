@@ -4,21 +4,22 @@
       <Header />
     </div>
 
-    <div id="cesiumContainer">
-      <Cesium :key="currentModel" />
+    <div id="mainContainer">
+      <Cesium :key="currentModel" v-if="currentMainComponent==='view1'"/>
+      <Table v-if="currentMainComponent==='view2'"/>
     </div>
 
     <div id="leftContainer">
-      <!-- <LeftChartPanel /> -->
+      <LeftChartPanel v-if="currentMainComponent==='view1'"/>
     </div>
 
     <div id="rightContainer">
-      <!-- <RightChartPanel /> -->
+      <RightChartPanel v-if="currentMainComponent==='view1'"/>
       <!-- <Tree /> -->
     </div>
 
     <div id="footerContainer">
-      <!-- <Footer /> -->
+      <Footer />
     </div>
   </div>
 </template>
@@ -29,11 +30,15 @@ import Tree from "@/components/Tree.vue"
 import LeftChartPanel from "@/components/LeftChartPanel.vue"
 import RightChartPanel from "@/components/RightChartPanel.vue"
 import Cesium from "@/components/Cesium.vue"
+import Table from "@/components/Table.vue"
 import Footer from "@/components/Footer.vue"
 import { computed } from "vue"
 import { useStore } from "vuex"
 
 const store = useStore();
+const currentMainComponent = computed({
+	get() { return store.getters.CURRENT_VIEW; }
+});
 const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知道要更新 <Cesium />
 
 </script>
@@ -49,7 +54,10 @@ const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知
   #headerContainer {
     width: 100%;
     position: absolute;
-    // border: 1px solid red;
+  }
+
+  #mainContainer {
+    height: 100%;
   }
 
   #leftContainer {
@@ -57,7 +65,6 @@ const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知
     top: 50%;
     left: 0;
     transform: translate(0, -50%);
-    // border: 1px solid red;
   }
 
   #rightContainer {
@@ -67,15 +74,10 @@ const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知
     transform: translate(0, -50%);
   }
 
-  #cesiumContainer {
-    height: 100%;
-  }
-
   #footerContainer {
     width: 100%;
     position: absolute;
     bottom: 0;
-    // border: 1px solid red;
   }
 }
 </style>

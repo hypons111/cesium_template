@@ -21,7 +21,6 @@
             :value="item.value"></el-option>
         </el-select>
       </div>
-
     </div>
 
     <div id="headerRow_2" class="headerRow">
@@ -44,11 +43,15 @@ const projectName = ref(process.env.VUE_APP_PROJECT_NAME);
 
 const headerAsideLeftOptions = [
   {
-    value: 'building',
-    label: 'Building'
+    value: '',
+    label: 'ALL'
+  },
+  {
+    value: 1,
+    label: 'Model 1'
   }, {
-    value: 'floor',
-    label: 'Floor'
+    value: 2,
+    label: 'Model 2'
   }
 ]
 
@@ -102,7 +105,7 @@ function switchModel(t) {
 
       p {
         display: inline-block;
-        color: var(--WHITE);
+        color: rgb(var(--WHITE));
         font-size: 1.75em;
         font-weight: 900;
         font-weight: bolder;
@@ -123,13 +126,13 @@ function switchModel(t) {
         font-weight: bold;
         padding: 0.75em;
 
-        background-color: var(--BLUE_4);
+        background-color: rgb(var(--BLUE));
         box-shadow: none;
-        border: 1px solid cyan;
+        border: 1px solid rgb(var(--BLUE));
         border-radius: 0;
 
         * {
-          color: var(--WHITE);
+          color: rgb(var(--WHITE));
         }
 
       }
@@ -141,7 +144,7 @@ function switchModel(t) {
     flex-direction: column;
 
     #clock {
-      background-color: black;
+      background-color: rgb(var(--BLACK));
     }
 
     #marqueeContainer {}
@@ -152,8 +155,8 @@ function switchModel(t) {
 <style lang="scss">
 .el-popper {
   * {
-    color: var(--WHITE);
-    background-color: var(--BLUE_4);
+    color: rgb(var(--RED));
+    background-color: rgb(var(--BLUE_4));
   }
 }
 </style>

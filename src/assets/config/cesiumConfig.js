@@ -11,68 +11,68 @@ import BROWN_TAG from "@/assets/image/brown.png";
     2. `modelType` 設定模型來源 
     3.a `localModalArray` // 每個模型都要獨立的屬性數值物件 (參考下面范例)
     3.b `ionModalArray`  // 只需要提供模型 id，各種屬性數值都在 ion 上設定
+
+    `viewer`
+    1.  `zoomTo`: "coordinate"，`flyOffsety` 就用 [0, 0, 0]
 */
 
 const settings = {
-  ionDefaultAccessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3OTgwYjIyNS0xNzlmLTQ0YWQtODRhMy1iYTAxOGRkZDQyMmYiLCJpZCI6MTk2Mzk1LCJpYXQiOjE3MTQxNDkyMDJ9.jnx-ICcOXNgxlZjN97uY3Rpdm4l0rHan8neh3fhK6RU",
-
   viewer: {
-    showEarth: true, // true / false 
-    backgroundColor: "BLACK", // 要大寫, 要使用 Cesium.Color 可使用的顏色
+    ionDefaultAccessToken:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3OTgwYjIyNS0xNzlmLTQ0YWQtODRhMy1iYTAxOGRkZDQyMmYiLCJpZCI6MTk2Mzk1LCJpYXQiOjE3MTQxNDkyMDJ9.jnx-ICcOXNgxlZjN97uY3Rpdm4l0rHan8neh3fhK6RU",
+    showEarth: true, // true / false
+    backgroundColor: "GRAY", // 要大寫, 要使用 Cesium.Color 可使用的顏色
+    useGoogleMap: false, // true / false //是否使用 ion google map
+    // minimumZoomDistance: 100, // 限制視點的最近距離
+    // maximumZoomDistance: 100000 // 限制視點的最遠距離
   },
 
   model: {
-    useGoogleMap: false, // 是否使用 ion google map
-    modelType: "local", // "local" / "ion" 
+    
+    modelType: "local", // "local" / "ion"
 
-    // 要載入的 local 模型
-    localModalArray: [
+    ModalArray: [1, 2], // ion ID / .glTF 檔名 
+    
+    coordinateArray: [
       {
-        name: "building",
-        x: 121.56451743862726,
-        y: 25.0339,
+        x: 121.598,
+        y: 25.055,
         z: 0,
-        // h: 10, // heading 橫向視線角度
-        // p: -0.5, // pitch 緃向視線角度
-        // r: 0.5, // roll 地平線角度
+        h: 0, // heading 橫向視線角度  // 正數=逆時針，負數=順時針
+        p: 0, // pitch 緃向視線角度
+        r: 0, // roll 地平線角度
       },
       {
-        name: "floor",
-        x: 121.564,
-        y: 25.034,
+        x: 121.597,
+        y: 25.055,
         z: 0,
-        // h: 0, // heading 橫向視線角度
-        // p: -0.5, // pitch 緃向視線角度
-        // r: 0, // roll 地平線角度
+        h: 0, // heading 橫向視線角度
+        p: -0.5, // pitch 緃向視線角度
+        r: 0.5, // roll 地平線角度
       },
-    ],
-
-    // 要載入的 ion 模型
-    ionModalArray: [2557680, 2557681],
+    ]
   },
 
   camera: {
-    zoomType: "set", // "set" / "fly" /
+    zoomType: "setView", // "setView" / "flyTo" /
 
     /* "model" 鏡頭會自動切換到模型位置 */
     /* "coordinate" 鏡頭會切換到座標 */
     /* settings.showEarth = false 時會無視"coordinate", 切換到模型位置 */
-    zoomTo: "model", // "model" / "coordinate"
-
-    setOffset: 10, // set 專用 offset 鏡頭 offset 距離
-    flyOffset: [-300, 500, -420], // fly 專用 offset 鏡頭 offset 距離
-    flyDuration: 2, // fly 專用 flyTo 效果持續秒數
+    zoomTo: "coordinate", // "model" / "coordinate"
 
     /* 座標 */
-    coordinate: {
-      // 富基漁港 x: 121.534, y: 25.284, z: 500,
-      x: 121.598, // 數字大=向右移動, 只會在經度移動, 不會受視度影響
-      y: 25.045, // 數字大=向下移動, 只會在緯度移動, 不會受視度影響
-      z: 500, // 與地面距離
-      h: -0.025, // heading 橫向視線角度
-      p: -1, // pitch 緃向視線角度
-      r: 0, // roll 地平線角度
-    },
+    x: 121.598, // 數字大=向右移動, 只會在經度移動, 不會受視度影響
+    y: 25.05, // 數字大=向下移動, 只會在緯度移動, 不會受視度影響
+    z: 500, // 與地面距離
+    h: 0, // heading 橫向視線角度
+    p: -0.75, // pitch 緃向視線角度
+    r: 0, // roll 地平線角度
+
+
+    setOffset: 100, // set 專用 offset 鏡頭 offset 距離
+    flyOffset: [0, 0, 0], // fly 專用 offset 鏡頭 offset 距離
+    flyDuration: 2, // fly 專用 flyTo 效果持續秒數
   },
 
   patrol: {
@@ -98,12 +98,15 @@ const settings = {
 /* 設定 cesium viewer */
 /* 用 settings 控制 */
 const hideEarth = {
-  /*  cesium 地圖 */
+  /* cesium 地圖 */
   imageryProvider: false, // 禁用影像圖層
   terrainProvider: false, // 禁用地形圖層
   globe: false, // 不顯示地球
-  skyBox: false, // 不顯示天空盒 包括太陽,月亮
-  skyAtmosphere: false, // 不顯示大氣層
+};
+
+const hideSpace = {
+  skyBox: false, // 太陽, 月亮 // false / 註解
+  // skyAtmosphere: false, // 大氣層 // false / 註解
 };
 
 /* 設定 cesium viewer */
@@ -172,4 +175,4 @@ const tagsArray = [
   },
 ];
 
-export { settings, hidePanel, hideEarth, tagsArray };
+export { settings, hidePanel, hideSpace, hideEarth, tagsArray };

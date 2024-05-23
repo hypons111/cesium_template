@@ -135,12 +135,12 @@ function remove(node, data) {
   height: calc(100vh - 6em - 2em);
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.75);
-  border: 2px solid cyan;
+  background-color: rgba(var(--BLACK), 0.75));
+  border: 2px solid rgb(var(--CYAN));
 
   .el-tree {
     background: none;
-    color: var(--WHITE);
+    color: rgb(var(--WHITE));
 
     .custom-tree-node {
       flex: 1;

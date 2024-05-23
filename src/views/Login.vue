@@ -48,7 +48,7 @@ function login() {
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        background-color: rgba(255, 255, 255, 0.75);
+        background-color: rgba(var(--WHITE), 0.75);
         padding: 1em;
 
         p {
@@ -76,7 +76,7 @@ function login() {
                     padding: 6px;
                     flex-grow: 1;
                     border-radius: 0.25em;
-                    background-color: var(--WHITE);
+                    background-color: rgb(var(--WHITE));
                 }
 
                 &:first-child {
@@ -88,11 +88,11 @@ function login() {
         button {
             width: 100%;
             height: 2em;
-            color: var(--WHITE);
+            color: rgb(var(--WHITE));
             font-size: 1.25em;
             font-weight: bolder;
             border-radius: 0.25em;
-            background-color: #41a7e0;
+            background-color: rgb(var(--B4));
         }
     }
 

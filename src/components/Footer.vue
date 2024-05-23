@@ -42,12 +42,8 @@ import { computed } from 'vue';
 import { useStore } from "vuex";
 const store = useStore();
 const currentView = computed({
-	set(value) { // 改變 <select> 時，set 會被觸發更新 'SET_CURRENT_VIEW'
-		store.commit("SET_CURRENT_VIEW", value);
-	},
-	get() { // 'SET_CURRENT_VIEW' 被更新後會被觸發 get 更新 currentView
-		return store.getters.CURRENT_VIEW;
-	},
+	get() { return store.getters.CURRENT_VIEW; }, // 'SET_CURRENT_VIEW' 被更新後會被觸發 get 更新 currentView
+	set(value) { store.commit("SET_CURRENT_VIEW", value); } // 改變 <select> 時，set 會被觸發更新 'SET_CURRENT_VIEW'
 });
 </script>
 
@@ -58,7 +54,7 @@ const currentView = computed({
 	display: flex;
 	justify-content: center;
 	align-items: flex-start;
-	color: var(--WHITE);
+	color: rgb(var(--WHITE));
 	font-weight: bold;
 	z-index: 10;
 
@@ -75,7 +71,7 @@ const currentView = computed({
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			color: gray;
+			color: rgb(var(--GRAY5));
 			cursor: pointer;
 
 			// 有底圖
@@ -85,7 +81,7 @@ const currentView = computed({
 			// background-position: bottom;
 
 			// 沒有底圖
-			background-color: var(--BLUE_4);
+			background-color: rgb(var(--B8));
 
 			p {
 				margin: 3px 0 0 0.5em;
@@ -93,8 +89,8 @@ const currentView = computed({
 		}
 
 		.currentView {
-			color: var(--WHITE);
-			background-color: var(--BLUE_3);
+			color: rgb(var(--WHITE));
+			background-color: rgb(var(--BLUE));
 			// background-image: url("../assets/image/page_BTN_ON.png");
 		}
 

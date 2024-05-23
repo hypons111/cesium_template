@@ -12,7 +12,7 @@ const routes = [
     component: () => import('../views/Index.vue')
   },
   {
-    path: '/test',
+    path: '/XXX',
     name: '404',
     component: () => import('../views/NotFound.vue')
   }

@@ -4,12 +4,12 @@ export default createStore({
   state: {
     CURRENT_VIEW: "view1",
     CURRENT_MODEL: "",
-    IS_SHOW_CESIUM: true,
-    REFRESH_KEY: true
+    CURRENT_MAIN_COMPONENT: "view1"
   },
   getters: {
     CURRENT_VIEW: state => state.CURRENT_VIEW,
     CURRENT_MODEL: state => state.CURRENT_MODEL,
+    CURRENT_MAIN_COMPONENT: state => state.CURRENT_MAIN_COMPONENT,
   },
   mutations: {
     SET_CURRENT_VIEW(state, payload) {
@@ -18,15 +18,10 @@ export default createStore({
     SET_CURRENT_MODEL(state, payload) {
       state.CURRENT_MODEL = payload;
     },
+    SET_CURRENT_MAIN_COMPONENT(state, payload) {
+      state.CURRENT_MAIN_COMPONENT = payload;
+    },
   },
-  actions: {
-    // INIT_CURRENT_VIEW({ commit }) {
-    //   commit("SET_CURRENT_VIEW", "view1");
-    // },
-    // INIT_CURRENT_MODEL({ commit }) {
-    //   commit("SET_CURRENT_MODEL", "building");
-    // }
-  },
-  modules: {
-  }
+  actions: {},
+  modules: {}
 })

@@ -66,8 +66,8 @@ const fakeChartData = ref({
       },
       /* pie 旁邊的線 */
       labelLine: {
-        length: 10,
-        length2: 10,
+        length: 5,
+        length2: 5,
       },
     }
   ]

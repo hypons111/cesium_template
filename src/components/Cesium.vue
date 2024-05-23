@@ -1,6 +1,6 @@
 <template>
   <div id="cesium">
-    <!-- <button id="patrolBtn" @click="patrol()">Patrol</button> -->
+    <button id="patrolBtn" @click="patrol()">Patrol</button>
     <div id="viewerContainer"></div>
   </div>
 </template>
@@ -8,7 +8,7 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import * as Cesium from "cesium";
-import { settings, hidePanel, hideEarth, tagsArray } from "@/assets/config/cesiumConfig"
+import { settings, hidePanel, hideSpace, hideEarth, tagsArray } from "@/assets/config/cesiumConfig"
 import { useStore } from "vuex";
 
 const store = useStore();
@@ -21,8 +21,8 @@ onMounted(() => {
 
 async function initial() {
   window.viewer = await addViewer("viewerContainer"); // 宣告 cesium viewer 實例
-  // await addGLTF();
-  await add3DTiles();
+  await addGLTF();
+  // await add3DTiles();
   tagsArray.forEach((tag) => {
     addLabel(tag);
     addBillBoard(tag);
@@ -31,99 +31,79 @@ async function initial() {
 }
 
 // 建立 viewer
-function addViewer(container) {
-  Cesium.Ion.defaultAccessToken = settings.ionDefaultAccessToken; // ion token
-  const viewerConfig = settings.viewer.showEarth === true ? hidePanel : { ...hidePanel, ...hideEarth }; // 加入需要的 viewer 設定
+async function addViewer(container) {
+  Cesium.Ion.defaultAccessToken = settings.viewer.ionDefaultAccessToken; // ion token
+  const viewerConfig = settings.viewer.showEarth === true ? { ...hidePanel, ...hideSpace } : { ...hidePanel, ...hideSpace, ...hideEarth }; // 加入需要的 viewer 設定
   const viewer = new Cesium.Viewer(container, viewerConfig); // 套用 viewer 設定
   viewer.scene.backgroundColor = Cesium.Color[settings.viewer.backgroundColor]; // 移除太空底圖後的背景顏色
-  viewer.scene.globe.baseColor = Cesium.Color.BLACK; // 移除地球底圖後的地球顏色
-  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 5000000; // 限制視點的最近距離
-  viewer.scene.screenSpaceCameraController.maximumZoomDistance = 10000000; // 限制視點的最遠距離
-  viewer.scene.mode = Cesium.SceneMode.COLUMBUS_VIEW; // 使用 2.5D 模式
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = settings.viewer.minimumZoomDistance; // 限制視點的最近距離
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance = settings.viewer.maximumZoomDistance; // 限制視點的最遠距離
+  // viewer.scene.mode = Cesium.SceneMode.COLUMBUS_VIEW; // 使用 2.5D 模式
 
   /* 使用 google 地圖時, 關閉 bing 地圖, 可加快載入 */
-  if (settings.model.useGoogleMap) {
-    viewer.scene.terrainProvider = settings.model.useGoogleMap;
+  if (settings.viewer.useGoogleMap) {
+    viewer.scene.terrainProvider = true;
+    viewer.scene.primitives.add(
+      await Cesium.Cesium3DTileset.fromIonAssetId(2275207) // remote model
+    );
   }
   return viewer;
 }
 
-/* 3D Tiles 模型 */
-/* ion 資源：模型大小，角度，縮放在 cesium ion 上設定 */
-/* local 資源：模型大小，角度，縮放設定位置暫時不明 */
-async function add3DTiles() {
+/* glTF 模型 */
+async function addGLTF() {
+  const camera = settings.camera;
+  const model = settings.model;
+
   try {
-    const camera = settings.camera;
-    let primitives = undefined;
-    let destination = undefined;
-    let orientation = new Cesium.HeadingPitchRange(camera.coordinate.h, camera.coordinate.p, camera.coordinate.r);
+    const coordinate = model.coordinateArray
+    let MODEL_URI = undefined;
+    let entity = undefined;
 
-    /* 是否使用 google map */
-    /* 請在 cesiumConfig.js 設定 */
-    if (settings.model.useGoogleMap) {
-      viewer.scene.primitives.add(
-        await Cesium.Cesium3DTileset.fromIonAssetId(2275207) // remote model
-      );
-    }
+    for (let i = 0; i < model.ModalArray.length; i++) {
 
-    /* 使用 本地/ion 模型 */
-    /* 請在 cesiumConfig.js 設定 */
-    if (settings.model.modelType === "local") { // local model
-      for (const model of settings.model.localModalArray) {
-        if (currentModel.value === "" || model.name === currentModel.value) { // 切左換模型/顯示全部模型
-          const tileset = await Cesium.Cesium3DTileset.fromUrl(`/3DTiles/${model.name}/tileset.json`);
-          primitives = viewer.scene.primitives.add(tileset);
-          const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center); // cartographic ＝ 模型邊界盒中心點 (模型原始位置)
-          const original = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0); // original = 模型邊界盒中心點的笛卡兒座標
-          const offset = Cesium.Cartesian3.fromDegrees(model.x, model.y, model.z); // offset = localModalArray x,y,z 的笛卡兒座標 (移位)
-          const translation = Cesium.Cartesian3.subtract(offset, original, new Cesium.Cartesian3()); // translation = original 加上 offset 的笛卡兒座標
-          tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation); // 套用 translation
-        };
+      if (currentModel.value === "" || currentModel.value === model.ModalArray[i]) {
+console.log(currentModel.value)
+console.log(model.ModalArray[i])
+console.log(currentModel.value === model.ModalArray[i])
       }
-    } else if (settings.model.modelType === "ion") { // ion model
-      for (const model of settings.model.ionModalArray) {
-        primitives = viewer.scene.primitives.add(
-          await Cesium.Cesium3DTileset.fromIonAssetId(model)
-        );
-      }
+      if (currentModel.value === "" || currentModel.value === model.ModalArray[i]) { // 切換模型
+        if (model.modelType === "local") { // local model
+          MODEL_URI = `/gltf/${model.ModalArray[i]}.gltf`;
+        } else if (model.modelType === "ion") { // ion model
+          MODEL_URI = await Cesium.IonResource.fromAssetId(model.ModalArray[i]);
+        }
+      };
+
+      const position = Cesium.Cartesian3.fromDegrees(coordinate[i].x, coordinate[i].y, coordinate[i].z);
+      const heading = Cesium.Math.toRadians(coordinate[i].h);
+      const pitch = Cesium.Math.toRadians(coordinate[i].p);
+      const roll = Cesium.Math.toRadians(coordinate[i].r);
+      const orientation = Cesium.Transforms.headingPitchRollQuaternion(position, new Cesium.HeadingPitchRoll(heading, pitch, roll));
+      entity = viewer.entities.add({
+        position: position,
+        orientation: orientation,
+        model: { uri: MODEL_URI }
+      });
     }
 
     /* 鏡頭使用 模型/座標 */
     /* 請在 cesiumConfig.js 設定 */
     if (camera.zoomTo === "model" || !settings.viewer.showEarth) {
-      destination = primitives.boundingSphere.center; // 3D Tileset 包圍盒的中心位置
+      viewer.trackedEntity = entity;
     } else if (camera.zoomTo === "coordinate") {
-      destination = Cesium.Cartesian3.fromDegrees(camera.coordinate.x, camera.coordinate.y, camera.coordinate.z); // zoom 的位置, 可以是 model / Cartesian座標
-    }
-
-    /* 鏡頭使用 set/fly 方法移動 */
-    /* 請在 cesiumConfig.js 設定 */
-    if (camera.zoomType === "set") {
-      let offset = primitives.boundingSphere.radius * camera.setOffset
-      viewer.camera.setView({
+      const destination = Cesium.Cartesian3.fromDegrees(camera.x, camera.y, camera.z); // zoom 的位置, 可以是 model / Cartesian座標
+      const orientation = new Cesium.HeadingPitchRange(camera.h, camera.p, camera.r);
+      viewer.camera[camera.zoomType]({
         destination: destination,
         orientation: orientation,
       });
-      viewer.camera.moveBackward(offset); // 向後移動相機，設定距離
-    } else if (camera.zoomType === "fly") {
-      /* Cartesian3 相加函數 */
-      /* 3D Tileset 包圍盒的中心位 + offset */
-      destination = Cesium.Cartesian3.add(
-        destination,
-        new Cesium.Cartesian3(camera.flyOffset[0], camera.flyOffset[1], camera.flyOffset[2]),
-        new Cesium.Cartesian3() // 這個參數不要刪除, 可提高效能
-      );
-      await viewer.scene.camera.flyTo({
-        destination: destination,
-        orientation: orientation,
-        duration: camera.flyDuration,
-      });
     }
-
   } catch (error) {
-    console.log(`[add3DTiles() ERROR] : ${error}`);
+    console.log(`[addGLTF() ERROR] : ${error}`);
   }
 }
+
 
 // 加載 label
 function addLabel(tag) {
@@ -226,34 +206,75 @@ function moveForward(distance) {
   });
 }
 
-
-/* glTF 模型 */
-/* 停用 */
-/* 適合只有模型時使用 */
-/* 可使用本地資源 */
-async function addGLTF() {
+/* Forbidden */
+/* 3D Tiles 模型 */
+/* ion 資源：模型大小，角度，縮放在 cesium ion 上設定 */
+async function add3DTiles() {
   try {
-    // const MODEL_URI = await Cesium.IonResource.fromAssetId(2559040); // cesium ion model URL
-    // const MODEL_URI = process.env.VUE_APP_GLTF_PATH + process.env.VUE_APP_GLTF_NAME; // 正式 model URL
-    const MODEL_URI = process.env.VUE_APP_GLTF_PATH_LOCAL + process.env.VUE_APP_GLTF_NAME; // 本地 model URL
-    const entity = viewer.entities.add({
-      position: Cesium.Cartesian3.fromDegrees(121.5994799498, 25.056333648, 0),
-      model: {
-        uri: MODEL_URI,
-      },
-    });
-    viewer.trackedEntity = entity;
-    const destination = Cesium.Cartesian3.fromDegrees(
-      121.59867013890916,
-      25.045,
-      500
-    );
-    const orientation = new Cesium.HeadingPitchRange(camera.h, camera.p, camera.r);
-    viewer.zoomTo(entity, orientation);
+    const camera = settings.camera;
+    let primitives = undefined;
+    let destination = undefined;
+    let orientation = new Cesium.HeadingPitchRange(camera.h, camera.p, camera.r);
+
+    /* 使用 local/ion 模型 */
+    /* 請在 cesiumConfig.js 設定 */
+    if (settings.model.modelType === "local") { // local model
+      for (const model of settings.model.localModalArray) {
+        if (currentModel.value === "" || model.name === currentModel.value) { // 切左換模型/顯示全部模型
+          const tileset = await Cesium.Cesium3DTileset.fromUrl(`/3DTiles/${model.name}/tileset.json`); // 從 URL 加載 3D Tiles 數據
+          primitives = viewer.scene.primitives.add(tileset); // 將加載的數據集添加到 Cesium 的場景中的 primitives 物件
+          const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center); // cartographic ＝ 模型邊界盒中心點轉換成的經度、緯度、高度 (模型原始位置) 
+          const original = Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0.0); // original = cartographic 轉換成的笛卡兒座標
+          const offset = Cesium.Cartesian3.fromDegrees(model.x, model.y, model.z); // offset = 計算新的偏移的笛卡兒坐標
+          const translation = Cesium.Cartesian3.subtract(offset, original, new Cesium.Cartesian3()); // translation = 從原始位置到新位置的位移向量
+          tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation); // 套用 translation
+        };
+      }
+    } else if (settings.model.modelType === "ion") { // ion model
+      for (const model of settings.model.ionModalArray) {
+        primitives = viewer.scene.primitives.add(
+          await Cesium.Cesium3DTileset.fromIonAssetId(model)
+        );
+      }
+    }
+
+    /* 鏡頭使用 模型/座標 */
+    /* 請在 cesiumConfig.js 設定 */
+    if (camera.zoomTo === "model" || !settings.viewer.showEarth) {
+      destination = primitives.boundingSphere.center; // 3D Tileset 包圍盒的中心位置
+    } else if (camera.zoomTo === "coordinate") {
+      destination = Cesium.Cartesian3.fromDegrees(camera.x, camera.y, camera.z); // zoom 的位置, 可以是 model / Cartesian座標
+    }
+
+    /* 鏡頭使用 set/fly 方法移動 */
+    /* 請在 cesiumConfig.js 設定 */
+    if (camera.zoomType === "setView") {
+      let offset = primitives.boundingSphere.radius * camera.setOffset
+      viewer.camera.setView({
+        destination: destination,
+        orientation: orientation,
+      });
+      viewer.camera.moveBackward(offset); // 向後移動相機，設定距離
+    } else if (camera.zoomType === "flyTo") {
+      /* Cartesian3 相加函數 */
+      /* 3D Tileset 包圍盒的中心位 + offset */
+      destination = Cesium.Cartesian3.add(
+        destination,
+        new Cesium.Cartesian3(camera.flyOffset[0], camera.flyOffset[1], camera.flyOffset[2]),
+        new Cesium.Cartesian3() // 這個參數不要刪除, 可提高效能
+      );
+      await viewer.scene.camera.flyTo({
+        destination: destination,
+        orientation: orientation,
+        duration: camera.flyDuration,
+      });
+    }
+
   } catch (error) {
-    console.log(`[addGLTF() ERROR] : ${error}`);
+    console.log(`[add3DTiles() ERROR] : ${error}`);
   }
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -270,7 +291,6 @@ async function addGLTF() {
     height: 100%;
   }
 }
-
 
 #patrolBtn {
   position: relative;

@@ -40,7 +40,7 @@
         width: fit-content;
         height: 100%;
         font-size: 1.5em;
-        color: red;
+        color: rgb(var(--RED));
         line-height: 1.25em;
         text-wrap: nowrap;
         animation: slide 20s linear infinite;

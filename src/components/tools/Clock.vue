@@ -12,7 +12,7 @@
 <script setup>
 class DateTime {
   constructor() {
-    this.weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    this.weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     this.Date = new Date();
     this.year = this.Date.getFullYear();
     this.month = (this.Date.getMonth() + 1).toString().padStart(2, '0');
@@ -75,8 +75,9 @@ onUnmounted(() => {
   height: 1.25em;
   line-height: 1.25em;
   font-size: 1.25em;
-  color: var(--GRAY_1);
+  color: rgb(var(--GRAY2));
   font-family: 'DSDigital';
+  padding: 0 0.25em;
 
   span:nth-child(2) {
     margin: 0 0.5em;
