@@ -1,19 +1,40 @@
 <template>
   <div id="cesium">
-    <button id="patrolBtn" @click="patrol()">Patrol</button>
     <div id="viewerContainer"></div>
   </div>
+
+  <div id="CesiumMenuContainer" @contextmenu.prevent
+    :style="{ top: cesiumMenuData.y + 'px', left: cesiumMenuData.x + 'px' }" v-if="cesiumMenuData.show">
+    <div id="CesiumMenu" class="">
+      <ul>
+        <li @click="patrol"><button>巡邏</button></li>
+        <li>經度 : {{ cesiumMenuData.longitude }}</li>
+        <li>緯度 : {{ cesiumMenuData.latitude }}</li>
+        <li>高度 : {{ cesiumMenuData.height }}</li>
+      </ul>
+    </div>
+  </div>
+
+
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import * as Cesium from "cesium";
-import { settings, hidePanel, hideSpace, hideEarth, tagsArray } from "@/assets/config/cesiumConfig"
+import { settings, hidePanel, hideSpace, hideEarth, tagsArray } from "@/assets/javascript/cesiumSetting"
 import { useStore } from "vuex";
 
 const store = useStore();
 
 const currentModel = computed(() => store.getters.CURRENT_MODEL);
+const cesiumMenuData = ref({
+  show: false,
+  x: 0,
+  y: 0,
+  longitude: 0,
+  latitude: 0,
+  height: 0
+});
 
 onMounted(() => {
   initial();
@@ -26,7 +47,7 @@ async function initial() {
   tagsArray.forEach((tag) => {
     addLabel(tag);
     addBillBoard(tag);
-    // addMouseClickListeners();
+    addMouseClickListeners();
   });
 }
 
@@ -36,8 +57,8 @@ async function addViewer(container) {
   const viewerConfig = settings.viewer.showEarth === true ? { ...hidePanel, ...hideSpace } : { ...hidePanel, ...hideSpace, ...hideEarth }; // 加入需要的 viewer 設定
   const viewer = new Cesium.Viewer(container, viewerConfig); // 套用 viewer 設定
   viewer.scene.backgroundColor = Cesium.Color[settings.viewer.backgroundColor]; // 移除太空底圖後的背景顏色
-  viewer.scene.screenSpaceCameraController.minimumZoomDistance = settings.viewer.minimumZoomDistance; // 限制視點的最近距離
-  viewer.scene.screenSpaceCameraController.maximumZoomDistance = settings.viewer.maximumZoomDistance; // 限制視點的最遠距離
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance = settings.viewer.maximumZoomDistance || 10000000; // 限制視點的最遠距離
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = settings.viewer.minimumZoomDistance || 0; // 限制視點的最近距離
   // viewer.scene.mode = Cesium.SceneMode.COLUMBUS_VIEW; // 使用 2.5D 模式
 
   /* 使用 google 地圖時, 關閉 bing 地圖, 可加快載入 */
@@ -61,11 +82,10 @@ async function addGLTF() {
     let entity = undefined;
 
     for (let i = 0; i < model.ModalArray.length; i++) {
-
       if (currentModel.value === "" || currentModel.value === model.ModalArray[i]) {
-console.log(currentModel.value)
-console.log(model.ModalArray[i])
-console.log(currentModel.value === model.ModalArray[i])
+        console.log(currentModel.value)
+        console.log(model.ModalArray[i])
+        console.log(currentModel.value === model.ModalArray[i])
       }
       if (currentModel.value === "" || currentModel.value === model.ModalArray[i]) { // 切換模型
         if (model.modelType === "local") { // local model
@@ -104,7 +124,6 @@ console.log(currentModel.value === model.ModalArray[i])
   }
 }
 
-
 // 加載 label
 function addLabel(tag) {
   viewer.entities.add({
@@ -139,28 +158,39 @@ function addBillBoard(tag) {
 }
 
 // 滑鼠左右點擊事件
-async function addMouseClickListeners() {
+function addMouseClickListeners() {
   const clickListener = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
   // left click
   clickListener.setInputAction((click) => {
-    console.log("LEFT CLICK");
+    cesiumMenuData.value.show = false;
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
   // right click 顯示 X,Y,Z,H,P,R
-  clickListener.setInputAction((movement) => {
+  clickListener.setInputAction(async (movement) => {
+    const { x, y } = movement.position;
     const cartesian = viewer.scene.pickPosition(movement.position);
     const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
     const longitude = Cesium.Math.toDegrees(cartographic.longitude);
     const latitude = Cesium.Math.toDegrees(cartographic.latitude);
     const height = cartographic.height < 0 ? 0 : cartographic.height;
-    console.log(
-      `Longitude: ${longitude}, Latitude: ${latitude}, Height: ${height}`
-    );
+    cesiumMenuData.value = {
+      show: false,
+      x: x,
+      y: y,
+      longitude: longitude,
+      latitude: latitude,
+      height: height
+    };
+    nextTick(() => {
+      cesiumMenuData.value.show = true;
+    });
   }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 }
 
 async function patrol() {
+  cesiumMenuData.value.show = false;
+
   const patrol = settings.patrol;
   const destination = Cesium.Cartesian3.fromDegrees(patrol.coordinate.x, patrol.coordinate.y, patrol.coordinate.z);
   const orientation = new Cesium.HeadingPitchRange(1.55, 0, 0);
@@ -281,6 +311,7 @@ async function add3DTiles() {
 #cesium {
   height: 100%;
   overflow: hidden;
+  // border: 1px solid red;
 }
 
 :deep#viewerContainer {
@@ -292,9 +323,28 @@ async function add3DTiles() {
   }
 }
 
-#patrolBtn {
-  position: relative;
-  top: 50%;
-  left: 50%;
+
+@keyframes showMenu {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 20em;
+  }
+}
+
+#CesiumMenuContainer {
+  position: absolute;
+  width: 15em;
+  height: 0;
+  z-index: 10;
+  font-size: 1rem;
+  background-color: rgb(var(--WHITE));
+  border: 5px solid red;
+  animation-direction: normal;
+  animation-name: showMenu;
+  animation-duration:  0.25s;
+  animation-fill-mode: forwards;
+  //  linear infinite;
 }
 </style>

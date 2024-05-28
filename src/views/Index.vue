@@ -63,14 +63,14 @@ const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知
   #leftContainer {
     position: absolute;
     top: 50%;
-    left: 0;
+    left: 0.5em;
     transform: translate(0, -50%);
   }
 
   #rightContainer {
     position: absolute;
     top: 50%;
-    right: 0;
+    right: 0.5em;
     transform: translate(0, -50%);
   }
 

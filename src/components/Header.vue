@@ -8,7 +8,6 @@
           <el-option class="el_option" v-for="item in headerAsideLeftOptions" :key="item.value" :label="item.label"
             :value="item.value"></el-option>
         </el-select>
-
       </div>
 
       <div id="headerMain">
@@ -16,10 +15,10 @@
       </div>
 
       <div id="headerAsideRight" class="headerAside">
-        <el-select class="el_select" v-model="value" placeholder="OPTION">
-          <el-option v-for="item in headerAsideRightOptions" :key="item.value" :label="item.label"
-            :value="item.value"></el-option>
-        </el-select>
+        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />重設</buttton>
+        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</buttton>
+        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />設備清單</buttton>
+        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />視角清單</buttton>
       </div>
     </div>
 
@@ -55,20 +54,6 @@ const headerAsideLeftOptions = [
   }
 ]
 
-const headerAsideRightOptions = [{
-  value: '0',
-  label: '模型復原'
-}, {
-  value: '1',
-  label: '設備清單'
-}, {
-  value: '2',
-  label: '視角清單'
-}, {
-  value: '3',
-  label: '登入'
-}]
-
 function switchModel(t) {
   store.commit("SET_CURRENT_MODEL", t.value);
 }
@@ -101,7 +86,6 @@ function switchModel(t) {
       background-size: 100% 100%;
       background-position: center center;
       background-repeat: no-repeat;
-      // border: 1px solid cyan;
 
       p {
         display: inline-block;
@@ -114,12 +98,13 @@ function switchModel(t) {
     }
 
     .headerAside {
+      width: 20%;
+      height: 100%;
       position: relative;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      width: 20%;
       padding: 0 1em;
-      // border: 1px solid red;
 
       ::v-deep .el-select__wrapper {
         font-size: 1em;
@@ -134,8 +119,19 @@ function switchModel(t) {
         * {
           color: rgb(var(--WHITE));
         }
-
       }
+    }
+
+    #headerAsideRight {
+      buttton {
+        color: rgb(var(--CYAN));
+        padding: 0.5em;
+        background-color: rgba(var(--BLACK), 0.5);
+        border: 2px solid rgb(var(--CYAN));
+        border-radius: 0.25em;
+      }
+
+      // border: 1px solid red;
     }
   }
 
