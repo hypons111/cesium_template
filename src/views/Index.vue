@@ -5,16 +5,20 @@
     </div>
 
     <div id="mainContainer">
-      <Cesium :key="currentModel" v-if="currentMainComponent==='view1'"/>
-      <Table v-if="currentMainComponent==='view2'"/>
+      <Cesium :key="currentModel" v-if="currentSection === 'section1'" />
+      <Table v-if="currentSection === 'section2'" />
+    </div>
+
+    <div id="modalContainer" v-if="MODAL_STATUS.IS_SHOW">
+      <Modal />
     </div>
 
     <div id="leftContainer">
-      <LeftChartPanel v-if="currentMainComponent==='view1'"/>
+      <LeftChartPanel v-if="currentSection === 'section1'" />
     </div>
 
     <div id="rightContainer">
-      <RightChartPanel v-if="currentMainComponent==='view1'"/>
+      <RightChartPanel v-if="currentSection === 'section1'" />
       <!-- <Tree /> -->
     </div>
 
@@ -30,16 +34,16 @@ import Tree from "@/components/Tree.vue"
 import LeftChartPanel from "@/components/LeftChartPanel.vue"
 import RightChartPanel from "@/components/RightChartPanel.vue"
 import Cesium from "@/components/Cesium.vue"
+import Modal from "@/components/Modal.vue"
 import Table from "@/components/Table.vue"
 import Footer from "@/components/Footer.vue"
 import { computed } from "vue"
 import { useStore } from "vuex"
 
 const store = useStore();
-const currentMainComponent = computed({
-	get() { return store.getters.CURRENT_VIEW; }
-});
+const currentSection = computed(() => store.getters.CURRENT_SECTION);
 const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知道要更新 <Cesium />
+const MODAL_STATUS = computed(() => store.getters.MODAL_STATUS);
 
 </script>
 
@@ -58,6 +62,13 @@ const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知
 
   #mainContainer {
     height: 100%;
+  }
+
+  #modalContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   #leftContainer {

@@ -1,35 +1,35 @@
 <template>
 	<div id="footer">
-		<ul id="viewBtnGroup">
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view1' }" @click="currentView = 'view1'">
+		<ul id="sectionBtnGroup">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section1' }" @click="currentSection = 'section1'">
 				<font-awesome-icon icon="fa-solid fa-house" />
 				<p>頁面1</p>
 			</li>
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view2' }" @click="currentView = 'view2'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section2' }" @click="currentSection = 'section2'">
 				<font-awesome-icon icon="fa-solid fa-solar-panel" />
 				<p>頁面2</p>
 			</li>
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view3' }" @click="currentView = 'view3'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section3' }" @click="currentSection = 'section3'">
 				<font-awesome-icon :icon="['fas', 'bullhorn']" />
 				<p>頁面3</p>
 			</li>
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view4' }" @click="currentView = 'view4'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section4' }" @click="currentSection = 'section4'">
 				<font-awesome-icon :icon="['fas', 'door-closed']" />
 				<p>頁面4</p>
 			</li>
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view5' }" @click="currentView = 'view5'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section5' }" @click="currentSection = 'section5'">
 				<font-awesome-icon :icon="['fas', 'location-dot']" />
 				<p>頁面5</p>
 			</li>
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view6' }" @click="currentView = 'view6'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section6' }" @click="currentSection = 'section6'">
 				<font-awesome-icon :icon="['fas', 'link']" />
 				<p>頁面6</p>
 			</li>
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view7' }" @click="currentView = 'view7'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section7' }" @click="currentSection = 'section7'">
 				<font-awesome-icon :icon="['fas', 'vr-cardboard']" />
 				<p>頁面7</p>
 			</li>
-			<li id="" class="ViewBtn" :class="{ currentView: currentView === 'view8' }" @click="currentView = 'view8'">
+			<li id="" class="SectionBtn" :class="{ currentSection: currentSection === 'section8' }" @click="currentSection = 'section8'">
 				<font-awesome-icon :icon="['fas', 'cubes-stacked']" />
 				<p>頁面8</p>
 			</li>
@@ -41,9 +41,9 @@
 import { computed } from 'vue';
 import { useStore } from "vuex";
 const store = useStore();
-const currentView = computed({
-	get() { return store.getters.CURRENT_VIEW; }, // 'SET_CURRENT_VIEW' 被更新後會被觸發 get 更新 currentView
-	set(value) { store.commit("SET_CURRENT_VIEW", value); } // 改變 <select> 時，set 會被觸發更新 'SET_CURRENT_VIEW'
+const currentSection = computed({
+	get() { return store.getters.CURRENT_SECTION; }, // 'SET_CURRENT_VIEW' 被更新後會被觸發 get 更新 currentSection
+	set(value) { store.commit("SET_CURRENT_SECTION", value); } // 改變 <select> 時，set 會被觸發更新 'SET_CURRENT_VIEW'
 });
 </script>
 
@@ -58,7 +58,7 @@ const currentView = computed({
 	font-weight: bold;
 	z-index: 10;
 
-	#viewBtnGroup {
+	#sectionBtnGroup {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -66,7 +66,7 @@ const currentView = computed({
 		align-items: stretch;
 		list-style: none;
 
-		.ViewBtn {
+		.SectionBtn {
 			flex-grow: 1;
 			display: flex;
 			justify-content: center;
@@ -88,7 +88,7 @@ const currentView = computed({
 			}
 		}
 
-		.currentView {
+		.currentSection {
 			color: rgb(var(--WHITE));
 			background-color: rgb(var(--BLUE));
 			// background-image: url("../assets/image/page_BTN_ON.png");

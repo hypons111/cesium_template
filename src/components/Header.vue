@@ -15,8 +15,7 @@
       </div>
 
       <div id="headerAsideRight" class="headerAside">
-        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />重設</buttton>
-        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</buttton>
+        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />重設視角</buttton>
         <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />設備清單</buttton>
         <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />視角清單</buttton>
       </div>
@@ -42,16 +41,24 @@ const projectName = ref(process.env.VUE_APP_PROJECT_NAME);
 
 const headerAsideLeftOptions = [
   {
-    value: '',
-    label: 'ALL'
+    label: 'ALL',
+    value: ''
+  },{
+    label: 'Model 1',
+    value: 2597627
+  },{
+    label: 'Model 2',
+    value: 2597631
+  },{
+    label: 'Model 3',
+    value: 2597631
+  },{
+    label: 'Model 4',
+    value: 2597632
+  },{
+    label: 'Model 5',
+    value: 2597644
   },
-  {
-    value: 1,
-    label: 'Model 1'
-  }, {
-    value: 2,
-    label: 'Model 2'
-  }
 ]
 
 function switchModel(t) {
@@ -110,14 +117,13 @@ function switchModel(t) {
         font-size: 1em;
         font-weight: bold;
         padding: 0.75em;
-
-        background-color: rgb(var(--BLUE));
         box-shadow: none;
-        border: 1px solid rgb(var(--BLUE));
-        border-radius: 0;
-
+        background-color: rgba(var(--BLACK), 0.5);
+        border: 2px solid rgb(var(--CYAN));
+        border-radius: 0.25em;
+        
         * {
-          color: rgb(var(--WHITE));
+          color: rgb(var(--CYAN));
         }
       }
     }

@@ -1,81 +1,79 @@
 import BLUE_TAG from "@/assets/image/blue.png";
 import BROWN_TAG from "@/assets/image/brown.png";
 
-/* cesium 設定步驟
-
-  `viewer`
-    1. `ionDefaultAccessToken` cesium ion 的 token (如果本地模型檔案就設為空字串) (建議每個要使用的專案都申請一個新的帳號)
-    2. `showEarth` 是否顯示地球
-    3. `backgroundColor` 背景顏色 (`showEarth===false` 時才會有效)
-    4. `useGoogleMap` 是否使用 google map
-    5. `maximumZoomDistance` 設定限制視點的最遠距離 (註解此屬性會使用預設值 : 10000000)
-    6. `minimumZoomDistance` 設定限制視點的最近距離 (註解此屬性會使用預設值 : 0)
-
-  `model`
-    1. `modelType` 本地模型 / ion 模型
-    2. `ModalArray` 要載入的模型 (格式參考下面例子)
-    3. `coordinateArray` 每個載入的模型的位置和角度 (格式參考下面例子)
-
-  `camera`
-    1. `zoomType` 鏡頭移動到模型的方式
-    2. `zoomTo`  鏡頭移動到模型 / 指定位置 (當`settings.showEarth===false` 時, 會無視"coordinate", 鏡頭會移動到模型)
-    3.  鏡頭移動指定位置 
-        `x` 只會在經度移動, 不會受視角度影響
-        `y` 只會在緯度移動, 不會受視角度影響
-        `z` 與地面距離
-        `h` heading 橫向視線角度
-        `p` pitch 緃向視線角度
-        `r` roll 地平線角度
-    4. `flyDuration` // flyTo 效果持續秒數
-
-  `patrol`
-    1. `coordinate` 巡邏出發的位置和視點
-    2. `route` 巡邏的路徑
-*/
-
 const settings = {
   viewer: {
     ionDefaultAccessToken:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3OTgwYjIyNS0xNzlmLTQ0YWQtODRhMy1iYTAxOGRkZDQyMmYiLCJpZCI6MTk2Mzk1LCJpYXQiOjE3MTQxNDkyMDJ9.jnx-ICcOXNgxlZjN97uY3Rpdm4l0rHan8neh3fhK6RU",
-    showEarth: true, // true / false
-    backgroundColor: "GRAY", // 要大寫, 要使用 Cesium.Color 可使用的顏色
-    useGoogleMap: false, // true / false //是否使用 ion google map
-    maximumZoomDistance: 10000000, // 數值 / 註解
-    minimumZoomDistance: 100 // 數值 / 註解
+    showEarth: true,
+    backgroundColor: "BLACK",
+    useGoogleMap: false,
+    maximumZoomDistance: 10000000,
+    minimumZoomDistance: 10
   },
 
   model: {
-    modelType: "local", // "local" / "ion"
-    ModalArray: [1, 2], // 本地模型 : [ 檔案名.gltf , 檔案名.gltf , 檔案名.gltf] / ion 模型 : [ Assets.ID , Assets.ID , Assets.ID]
-    coordinateArray: [
+    modelType: "ion",
+    ModalArray: [ 2597627, 2597631, 2597632, 2597644, 2597646, ],
+    // ModalArray: [ 1, 2, "240527fugeeport" ],
+    modelSettingArray: [
       {
-        x: 121.599, // 經度 數字大=模型向右移動, 只會在經度移動, 不會受視度影響
-        y: 25.055, // 緯度 數字大=模型向下移動, 只會在緯度移動, 不會受視度影響
-        z: 0, // 高度 
-        h: 0, // heading 模型橫向角度  // 正數=逆時針，負數=順時針
-        p: 0, // pitch 模型緃向角度
-        r: 0, // roll 模型地平線角度
-      },
-      {
-        x: 121.597,
+        x: 121.6,
         y: 25.055,
         z: 0,
         h: 0,
-        p: -0.5,
-        r: 0.5,
+        p: 0,
+        r: 0,
+        s: 2
+      },
+      {
+        x: 121.6,
+        y: 25.055,
+        z: 0,
+        h: 0,
+        p: 0,
+        r: 0,
+        s: 1
+      },
+      {
+        x: 121.6,
+        y: 25.055,
+        z: 0,
+        h: 0,
+        p: 0,
+        r: 0,
+        s: 1
+      },
+      {
+        x: 121.6,
+        y: 25.055,
+        z: 0,
+        h: 0,
+        p: 0,
+        r: 0,
+        s: 1
+      },
+      {
+        x: 121.6,
+        y: 25.055,
+        z: 0,
+        h: 0,
+        p: 0,
+        r: 0,
+        s: 1
       },
     ]
   },
 
   camera: {
-    zoomType: "flyTo", // "setView" / "flyTo" /
-    zoomTo: "model", // "model" / "coordinate"
-    x: 121.59, // 經度 數字大=鏡頭向右移動, 只會在經度移動, 不會受視度影響
-    y: 25.05, // 緯度 數字大=鏡頭向下移動, 只會在緯度移動, 不會受視度影響
-    z: 500, // 高度 
-    h: 0, // heading 鏡頭橫向角度
-    p: -0.75, // pitch 鏡頭緃向角度
-    r: 0, // roll 鏡頭地平線角度
+    zoomType: "setView",
+    zoomTo: "coordinate",
+    x: 121.599,
+    y: 25.05,
+    z: 500,
+    h: 0,
+    p: -0.75,
+    r: 0,
     flyDuration: 2, 
     /* Forbidden */
     // setOffset: 100, // set 專用 offset 鏡頭 offset 距離
@@ -85,17 +83,17 @@ const settings = {
   patrol: {
     /* 巡邏起點座標 */
     coordinate: {
-      x: 121.59, //  經度 數字大=鏡頭向右移動, 只會在經度移動, 不會受視度影響
-      y: 25.056, // 緯度 數字大=鏡頭向下移動, 只會在緯度移動, 不會受視度影響
-      z: 2, // 與地面距離
-      h: 1.55, // heading 鏡頭橫向角度
-      p: 0, // pitch 鏡頭緃向角度
-      r: 0, // roll 鏡頭地平線角度
+      x: 121.59,
+      y: 25.056,
+      z: 2,
+      h: 1.55,
+      p: 0,
+      r: 0,
     },
 
     /* 巡邏點 */
     route: [
-      [0, 50], // /* [ 方向(正數轉左, 負數轉右) , 前進距離 ] */
+      [0, 50], 
       [90, 25],
       [-90, 10],
     ],
@@ -157,7 +155,6 @@ const tagsArray = [
 const hideEarth = {
   imageryProvider: false, // 禁用影像圖層
   terrainProvider: false, // 禁用地形圖層
-  globe: false, // 不顯示地球
 };
 
 /* 太空 */

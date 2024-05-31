@@ -1,13 +1,26 @@
 <template>
     <div id="marquee">
         <div id="marqueeContainer">
-        <p id="marqueeContents">The seaweed is always greener in somebody else's lake.
-          You dream about goin' up there, but that is a big mistake.</p>
+        <p id="marqueeContents">{{ marqueeContents }}</p>
       </div>
     </div>
 </template>
 
-<script></script>
+<script setup>
+import { ref, onMounted } from "vue";
+
+const marqueeContents = ref("");
+
+onMounted(() => {
+  fetchMarqueeContents();
+})
+
+function fetchMarqueeContents() {
+  // 連接 api
+  marqueeContents.value = "The seaweed is always greener in somebody else's lake. You dream about goin' up there, but that is a big mistake.";
+}
+
+</script>
 
 <style lang="scss" scoped>
 #marquee {

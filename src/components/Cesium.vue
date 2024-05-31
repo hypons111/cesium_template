@@ -1,21 +1,24 @@
 <template>
+  <!-- cesium 容器 -->
   <div id="cesium">
     <div id="viewerContainer"></div>
   </div>
 
-  <div id="CesiumMenuContainer" @contextmenu.prevent
-    :style="{ top: cesiumMenuData.y + 'px', left: cesiumMenuData.x + 'px' }" v-if="cesiumMenuData.show">
+  <!-- 滑鼠右鍵 panel -->
+  <div 
+    id="CesiumMenuContainer" 
+    @contextmenu.prevent
+    :style="{ top: cesiumMenuData.y + 'px', left: cesiumMenuData.x + 'px' }" v-if="cesiumMenuData.show"
+  >
     <div id="CesiumMenu" class="">
       <ul>
-        <li @click="patrol"><button>巡邏</button></li>
+        <li @click="patrolHandler"><button>巡邏</button></li>
         <li>經度 : {{ cesiumMenuData.longitude }}</li>
         <li>緯度 : {{ cesiumMenuData.latitude }}</li>
         <li>高度 : {{ cesiumMenuData.height }}</li>
       </ul>
     </div>
   </div>
-
-
 </template>
 
 <script setup>
@@ -23,6 +26,7 @@ import { ref, computed, onMounted, nextTick } from "vue";
 import * as Cesium from "cesium";
 import { settings, hidePanel, hideSpace, hideEarth, tagsArray } from "@/assets/javascript/cesiumSetting"
 import { useStore } from "vuex";
+import axios from "axios";
 
 const store = useStore();
 
@@ -35,24 +39,28 @@ const cesiumMenuData = ref({
   latitude: 0,
   height: 0
 });
+const entityArray = []; // 全部模型的 entity
 
 onMounted(() => {
   initial();
 });
 
 async function initial() {
-  window.viewer = await addViewer("viewerContainer"); // 宣告 cesium viewer 實例
+  window.viewer = await setViewer("viewerContainer"); // 宣告 cesium viewer 實例
   await addGLTF();
-  // await add3DTiles();
+
+  /* 下面這段之後要刪除，換成 `await showTagsHandler()` */
   tagsArray.forEach((tag) => {
-    addLabel(tag);
-    addBillBoard(tag);
-    addMouseClickListeners();
+    addTag(tag);
   });
+
+  // await showTagsHandler();
+
+  await setMouseEventListener();
 }
 
-// 建立 viewer
-async function addViewer(container) {
+/* 建立 viewer */
+async function setViewer(container) {
   Cesium.Ion.defaultAccessToken = settings.viewer.ionDefaultAccessToken; // ion token
   const viewerConfig = settings.viewer.showEarth === true ? { ...hidePanel, ...hideSpace } : { ...hidePanel, ...hideSpace, ...hideEarth }; // 加入需要的 viewer 設定
   const viewer = new Cesium.Viewer(container, viewerConfig); // 套用 viewer 設定
@@ -75,18 +83,13 @@ async function addViewer(container) {
 async function addGLTF() {
   const camera = settings.camera;
   const model = settings.model;
+  let entity = undefined;
 
   try {
-    const coordinate = model.coordinateArray
+    const modelSetting = model.modelSettingArray
     let MODEL_URI = undefined;
-    let entity = undefined;
 
     for (let i = 0; i < model.ModalArray.length; i++) {
-      if (currentModel.value === "" || currentModel.value === model.ModalArray[i]) {
-        console.log(currentModel.value)
-        console.log(model.ModalArray[i])
-        console.log(currentModel.value === model.ModalArray[i])
-      }
       if (currentModel.value === "" || currentModel.value === model.ModalArray[i]) { // 切換模型
         if (model.modelType === "local") { // local model
           MODEL_URI = `/gltf/${model.ModalArray[i]}.gltf`;
@@ -95,16 +98,20 @@ async function addGLTF() {
         }
       };
 
-      const position = Cesium.Cartesian3.fromDegrees(coordinate[i].x, coordinate[i].y, coordinate[i].z);
-      const heading = Cesium.Math.toRadians(coordinate[i].h);
-      const pitch = Cesium.Math.toRadians(coordinate[i].p);
-      const roll = Cesium.Math.toRadians(coordinate[i].r);
+      const position = Cesium.Cartesian3.fromDegrees(modelSetting[i].x, modelSetting[i].y, modelSetting[i].z);
+      const heading = Cesium.Math.toRadians(modelSetting[i].h);
+      const pitch = Cesium.Math.toRadians(modelSetting[i].p);
+      const roll = Cesium.Math.toRadians(modelSetting[i].r);
       const orientation = Cesium.Transforms.headingPitchRollQuaternion(position, new Cesium.HeadingPitchRoll(heading, pitch, roll));
       entity = viewer.entities.add({
-        position: position,
-        orientation: orientation,
-        model: { uri: MODEL_URI }
+        position: position, // 模型位置
+        orientation: orientation, // 模型角度
+        model: {
+          uri: MODEL_URI,  // 模型路徑
+          scale: modelSetting[i].s  // 模型大小
+        }
       });
+      entityArray.push(entity);
     }
 
     /* 鏡頭使用 模型/座標 */
@@ -124,9 +131,99 @@ async function addGLTF() {
   }
 }
 
-// 加載 label
-function addLabel(tag) {
-  viewer.entities.add({
+/* 滑鼠事件 */
+function setMouseEventListener() {
+  return new Promise((resolve, reject) => {
+    try {
+      const clickListener = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+      // 滑鼠左鍵
+      clickListener.setInputAction((click) => {
+        cesiumMenuData.value.show = false;
+        const feature = viewer.scene.pick(click.position);
+        if (feature) {
+          switch (feature.primitive.constructor.name) {
+            case "Model":
+              console.log("1");
+              break;
+            case "Label":
+            case "Billboard":
+              console.log(feature.id.data);
+              const value = {
+                IS_SHOW : true,
+                CONTENTS : feature.id.data
+              }
+              store.commit("SET_MODAL_STATUS", value)
+              break;
+          }
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+      // 滑鼠右鍵
+      clickListener.setInputAction(async (movement) => {
+        try {
+          const { x, y } = movement.position;
+          const cartesian = viewer.scene.pickPosition(movement.position);
+          const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+          const longitude = Cesium.Math.toDegrees(cartographic.longitude);
+          const latitude = Cesium.Math.toDegrees(cartographic.latitude);
+          const height = cartographic.height < 0 ? 0 : cartographic.height;
+          cesiumMenuData.value = {
+            show: false,
+            x: x,
+            y: y,
+            longitude: longitude,
+            latitude: latitude,
+            height: height
+          };
+          nextTick(() => {
+            cesiumMenuData.value.show = true;
+          });
+        } catch (error) {
+          console.log(`[MOUSE RIGHT CLICK ERROR] : ${error}`);
+        }
+      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+      // hover
+      if (currentModel.value === "") {
+        clickListener.setInputAction(function (movement) {
+          entityArray.forEach(entity => {
+            entity.model.color = Cesium.Color.fromCssColorString('rgba(255, 255, 255, 0.5)');
+          })
+          const feature = viewer.scene.pick(movement.endPosition);
+          if (!feature) return;
+          try {
+            feature.id.model.color = Cesium.Color.fromCssColorString('rgba(255, 255, 255, 1)'); // 改變顏色為黃色
+          } catch (E) { }
+        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+      } else {
+        entityArray.forEach(entity => {
+          entity.model.color = Cesium.Color.fromCssColorString('rgba(255, 255, 255, 1)');
+        })
+      }
+      resolve(true);
+    } catch (error) {
+      reject(error);
+    }
+  })
+}
+
+/* 顯示 label 和 billboard 資料 */
+function showTagsHandler() {
+  axios.get("")
+    .then((response) => {
+      response.forEach((tag) => {
+        addTag(tag);
+      })
+    })
+    .catch((error) => {
+      console.log(`[showTagsHandler() ERROR] : ${error}`);
+    })
+}
+
+/* 放置 tag (label + billBoard) */
+function addTag(tag) {
+  const entity = viewer.entities.add({
     position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
     label: {
       text: tag.label,
@@ -139,74 +236,37 @@ function addLabel(tag) {
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
       pixelOffset: new Cesium.Cartesian2(0, -50), // 與 billborad 距離
     },
+    billboard: {
+      image: tag.billboard,
+      scale: 0.05,
+      color: Cesium.Color.WHITE,
+      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+    },
   });
+  entity.data = tag;
 }
 
-// 加載 billBoard
-function addBillBoard(tag) {
-  viewer.entities.add(
-    {
-      position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
-      billboard: {
-        image: tag.billboard,
-        scale: 0.05,
-        color: Cesium.Color.WHITE,
-        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      },
-    });
-}
-
-// 滑鼠左右點擊事件
-function addMouseClickListeners() {
-  const clickListener = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-
-  // left click
-  clickListener.setInputAction((click) => {
-    cesiumMenuData.value.show = false;
-  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-
-  // right click 顯示 X,Y,Z,H,P,R
-  clickListener.setInputAction(async (movement) => {
-    const { x, y } = movement.position;
-    const cartesian = viewer.scene.pickPosition(movement.position);
-    const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-    const longitude = Cesium.Math.toDegrees(cartographic.longitude);
-    const latitude = Cesium.Math.toDegrees(cartographic.latitude);
-    const height = cartographic.height < 0 ? 0 : cartographic.height;
-    cesiumMenuData.value = {
-      show: false,
-      x: x,
-      y: y,
-      longitude: longitude,
-      latitude: latitude,
-      height: height
-    };
-    nextTick(() => {
-      cesiumMenuData.value.show = true;
-    });
-  }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
-}
-
-async function patrol() {
+/* 巡邏 */
+async function patrolHandler() {
   cesiumMenuData.value.show = false;
 
-  const patrol = settings.patrol;
-  const destination = Cesium.Cartesian3.fromDegrees(patrol.coordinate.x, patrol.coordinate.y, patrol.coordinate.z);
+  const patrolHandler = settings.patrolHandler;
+  const destination = Cesium.Cartesian3.fromDegrees(patrolHandler.coordinate.x, patrolHandler.coordinate.y, patrolHandler.coordinate.z);
   const orientation = new Cesium.HeadingPitchRange(1.55, 0, 0);
 
-  // 設定 patrol 初始位置
   viewer.camera.setView({
     destination: destination,
     orientation: orientation,
   });
 
-  for (const spot of patrol.route) {
+  for (const spot of patrolHandler.route) {
     await rotateCamera(spot[0]);
     await moveForward(spot[1]);
   }
 }
 
+/* 巡邏視角旋轉 */
 function rotateCamera(angle) {
   return new Promise((resolve, reject) => {
     let rotated = 0;
@@ -222,6 +282,7 @@ function rotateCamera(angle) {
   });
 }
 
+/* 巡邏視角向前 */
 function moveForward(distance) {
   return new Promise((resolve, reject) => {
     let sCounter = 0;
@@ -236,7 +297,7 @@ function moveForward(distance) {
   });
 }
 
-/* Forbidden */
+/* Forbidden Forbidden Forbidden Forbidden Forbidden */
 /* 3D Tiles 模型 */
 /* ion 資源：模型大小，角度，縮放在 cesium ion 上設定 */
 async function add3DTiles() {
@@ -305,6 +366,39 @@ async function add3DTiles() {
   }
 }
 
+/* 放置 label */
+function addLabel(tag) {
+  viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
+    label: {
+      text: tag.label,
+      font: "24px Helvetica",
+      fillColor: Cesium.Color.WHITE,
+      outlineColor: Cesium.Color.BLACK,
+      outlineWidth: 2,
+      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+      pixelOffset: new Cesium.Cartesian2(0, -50), // 與 billborad 距離
+    },
+  });
+}
+
+/* 放置 billBoard */
+function addBillBoard(tag) {
+  viewer.entities.add(
+    {
+      position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
+      billboard: {
+        image: tag.billboard,
+        scale: 0.05,
+        color: Cesium.Color.WHITE,
+        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+      },
+    });
+}
+/* Forbidden Forbidden Forbidden Forbidden Forbidden */
 </script>
 
 <style lang="scss" scoped>
@@ -322,7 +416,6 @@ async function add3DTiles() {
     height: 100%;
   }
 }
-
 
 @keyframes showMenu {
   0% {
@@ -343,8 +436,7 @@ async function add3DTiles() {
   border: 5px solid red;
   animation-direction: normal;
   animation-name: showMenu;
-  animation-duration:  0.25s;
+  animation-duration: 0.25s;
   animation-fill-mode: forwards;
-  //  linear infinite;
 }
 </style>
