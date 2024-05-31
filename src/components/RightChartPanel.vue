@@ -7,9 +7,9 @@
 </template>
 
 <script setup>
-import stackHorizontalBarChart from "@/components/charts/StackHorizontalBarChart.vue"
-import DoughnutChart from "@/components/charts/DoughnutChart.vue"
-import StackedLineChart from "@/components/charts/StackedLineChart.vue"
+import stackHorizontalBarChart from "@/components/charts/StackHorizontalBarChart_S.vue"
+import DoughnutChart from "@/components/charts/DoughnutChart_S.vue"
+import StackedLineChart from "@/components/charts/StackedLineChart_S.vue"
 import "@/assets/css/chart.css"
 </script>
 

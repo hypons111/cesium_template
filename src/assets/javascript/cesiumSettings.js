@@ -13,9 +13,9 @@ const settings = {
   },
 
   model: {
-    modelType: "ion",
-    ModalArray: [ 2597627, 2597631, 2597632, 2597644, 2597646, ],
-    // ModalArray: [ 1, 2, "240527fugeeport" ],
+    modelType: "local",
+    // ModalArray: [ 2597627, 2597631, 2597632, 2597644, 2597646, ],
+    ModalArray: [ 1, 2 ],
     modelSettingArray: [
       {
         x: 121.6,
@@ -100,8 +100,6 @@ const settings = {
   },
 };
 
-
-
 /* label 是文字 */
 /* billboard 是圖片，圖片要先用 `import from` 導入 */
 const tagsArray = [
@@ -148,7 +146,6 @@ const tagsArray = [
     billboard: BLUE_TAG,
   },
 ];
-
 
 /* cesium viewer 內部設定*/
 /* 地球 */

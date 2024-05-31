@@ -29,7 +29,7 @@ import * as echarts from 'echarts';
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
-  title: "標題-標題-標題",
+  title: "Doughnut Chart S",
   xData: ['A', 'B', 'C', 'D', 'E'],
   series: [
     {
@@ -78,8 +78,8 @@ function setChart() {
   const chart = echarts.init(chartContainer.value);
   chart.setOption({
     title: {
-      top: '3%',
-      left: '5%',
+      top: '5%',
+      left: '2.5%',
       text: fakeChartData.value.title,
       textStyle: {
         color: 'white'

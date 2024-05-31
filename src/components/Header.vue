@@ -15,9 +15,10 @@
       </div>
 
       <div id="headerAsideRight" class="headerAside">
-        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />重設視角</buttton>
-        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />設備清單</buttton>
-        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />視角清單</buttton>
+        <buttton @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</buttton>
+        <buttton @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</buttton>
+        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />設備</buttton>
+        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />視角</buttton>
       </div>
     </div>
 
@@ -31,9 +32,10 @@
 
 <script setup>
 import { ref } from "vue";
+import { useStore } from "vuex"
 import Clock from "@/components/tools/Clock.vue";
 import Marquee from "@/components/tools/Marquee.vue";
-import { useStore } from "vuex"
+import { patrolHandler, resetCamera } from '@/assets/javascript/cesiumUtils';
 
 const store = useStore();
 
