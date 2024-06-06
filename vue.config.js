@@ -8,6 +8,10 @@ const cesiumSource = "node_modules/cesium/Source";
 const cesiumWorkers = "node_modules/cesium/Build/Cesium/Workers";
 
 module.exports = defineConfig({
+  outputDir: "fuji",
+  publicPath: './',
+  assetsDir: 'assets',
+  indexPath: 'index.html',
   transpileDependencies: true,
   configureWebpack: {
     resolve: {
@@ -15,7 +19,7 @@ module.exports = defineConfig({
     },
     plugins: [
       new DefinePlugin({
-        CESIUM_BASE_URL: JSON.stringify("/"),
+        CESIUM_BASE_URL: JSON.stringify("./"),
       }),
       new CopyWebpackPlugin({
         patterns: [

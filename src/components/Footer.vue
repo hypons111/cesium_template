@@ -56,7 +56,6 @@ const currentSection = computed({
 	align-items: flex-start;
 	color: rgb(var(--WHITE));
 	font-weight: bold;
-	z-index: 10;
 
 	#sectionBtnGroup {
 		width: 100%;

@@ -1,6 +1,3 @@
-import BLUE_TAG from "@/assets/image/blue.png";
-import BROWN_TAG from "@/assets/image/brown.png";
-
 const settings = {
   viewer: {
     ionDefaultAccessToken:
@@ -9,72 +6,105 @@ const settings = {
     backgroundColor: "BLACK",
     useGoogleMap: false,
     maximumZoomDistance: 10000000,
-    minimumZoomDistance: 10
+    minimumZoomDistance: 10,
   },
 
   model: {
-    modelType: "local",
-    // ModalArray: [ 2597627, 2597631, 2597632, 2597644, 2597646, ],
-    ModalArray: [ 1, 2 ],
+    modelType: "ion",
+    ModalArray: [
+      {
+        label: "1F",
+        fileName: "2603591",
+      },
+      {
+        label: "1M",
+        fileName: "2603595",
+      },
+      {
+        label: "2F",
+        fileName: "2603597",
+      },
+      {
+        label: "3F",
+        fileName: "2603598",
+      },
+      {
+        label: "4F",
+        fileName: "2603599",
+      },
+      {
+        label: "RF",
+        fileName: "2603600",
+      }
+    ],
     modelSettingArray: [
       {
-        x: 121.6,
-        y: 25.055,
+        x: 121.5997116931,
+        y: 25.0561982235,
         z: 0,
-        h: 0,
+        h: 61,
         p: 0,
         r: 0,
-        s: 2
+        s: 3,
       },
       {
-        x: 121.6,
-        y: 25.055,
+        x: 121.5997116931,
+        y: 25.0561982235,
         z: 0,
-        h: 0,
+        h: 61,
         p: 0,
         r: 0,
-        s: 1
+        s: 3,
       },
       {
-        x: 121.6,
-        y: 25.055,
+        x: 121.5997116931,
+        y: 25.0561982235,
         z: 0,
-        h: 0,
+        h: 61,
         p: 0,
         r: 0,
-        s: 1
+        s: 3,
       },
       {
-        x: 121.6,
-        y: 25.055,
+        x: 121.5997116931,
+        y: 25.0561982235,
         z: 0,
-        h: 0,
+        h: 61,
         p: 0,
         r: 0,
-        s: 1
+        s: 3,
       },
       {
-        x: 121.6,
-        y: 25.055,
+        x: 121.5997116931,
+        y: 25.0561982235,
         z: 0,
-        h: 0,
+        h: 61,
         p: 0,
         r: 0,
-        s: 1
+        s: 3,
       },
-    ]
+      {
+        x: 121.5997116931,
+        y: 25.0561982235,
+        z: 0,
+        h: 61,
+        p: 0,
+        r: 0,
+        s: 3,
+      },
+    ],
   },
 
   camera: {
     zoomType: "setView",
     zoomTo: "coordinate",
-    x: 121.599,
-    y: 25.05,
-    z: 500,
+    x: 121.5997,
+    y: 25.053,
+    z: 200,
     h: 0,
-    p: -0.75,
+    p: -0.5,
     r: 0,
-    flyDuration: 2, 
+    flyDuration: 2,
     /* Forbidden */
     // setOffset: 100, // set 專用 offset 鏡頭 offset 距離
     // flyOffset: [0, 0, 0], // fly 專用 offset 鏡頭 offset 距離
@@ -82,70 +112,27 @@ const settings = {
 
   patrol: {
     /* 巡邏起點座標 */
-    coordinate: {
-      x: 121.59,
-      y: 25.056,
-      z: 2,
-      h: 1.55,
-      p: 0,
-      r: 0,
-    },
+
+    x: 121.59,
+    y: 25.056,
+    z: 2,
+    h: 1.55,
+    p: 0,
+    r: 0,
 
     /* 巡邏點 */
     route: [
-      [0, 50], 
+      [0, 50],
       [90, 25],
       [-90, 10],
+      [0, 50],
     ],
   },
-};
 
-/* label 是文字 */
-/* billboard 是圖片，圖片要先用 `import from` 導入 */
-const tagsArray = [
-  {
-    x: 121.61791056421559,
-    y: 25.067130541767458,
-    z: 0,
-    label: "東湖",
-    billboard: BROWN_TAG,
+  other: {
+    useHover: true,
   },
-  {
-    x: 121.61596654608162,
-    y: 25.060188554007564,
-    z: 0,
-    label: "南港軟體園區",
-    billboard: BROWN_TAG,
-  },
-  {
-    x: 121.61828397441555,
-    y: 25.055329028162433,
-    z: 0,
-    label: "南港展覽館",
-    billboard: BROWN_TAG,
-  },
-  {
-    x: 121.6178118985649,
-    y: 25.05530591177109,
-    z: 0,
-    label: "南港展覽館",
-    billboard: BLUE_TAG,
-  },
-  {
-    x: 121.6070957278744,
-    y: 25.052002527071547,
-    z: 0,
-    label: "南港",
-    billboard: BLUE_TAG,
-  },
-  {
-    x: 121.59315689266104,
-    y: 25.050461396738584,
-    z: 0,
-    label: "昆陽",
-    billboard: BLUE_TAG,
-  },
-];
+};
 
 /* cesium viewer 內部設定*/
 /* 地球 */
@@ -177,5 +164,4 @@ const hidePanel = {
   creditContainer: document.createElement("div"), // 隱藏版權信息
 };
 
-
-export { settings, hidePanel, hideSpace, hideEarth, tagsArray };
+export { settings, hidePanel, hideSpace, hideEarth };

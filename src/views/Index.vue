@@ -14,12 +14,11 @@
     </div>
 
     <div id="leftContainer">
-      <LeftChartPanel v-if="currentSection === 'section1'" />
+      <LeftPanel v-if="currentSection === 'section3'" />
     </div>
 
     <div id="rightContainer">
-      <RightChartPanel v-if="currentSection === 'section1'" />
-      <!-- <Tree /> -->
+      <RightPanel v-if="currentSection === 'section3' || currentSection === 'section4'" />
     </div>
 
     <div id="footerContainer">
@@ -29,16 +28,15 @@
 </template>
 
 <script setup>
+import { computed } from "vue"
+import { useStore } from "vuex"
 import Header from "@/components/Header.vue"
-import Tree from "@/components/Tree.vue"
-import LeftChartPanel from "@/components/LeftChartPanel.vue"
-import RightChartPanel from "@/components/RightChartPanel.vue"
+import LeftPanel from "@/components/LeftPanel.vue"
+import RightPanel from "@/components/RightPanel.vue"
 import Cesium from "@/components/Cesium.vue"
 import Modal from "@/components/Modal.vue"
 import Table from "@/components/Table.vue"
 import Footer from "@/components/Footer.vue"
-import { computed } from "vue"
-import { useStore } from "vuex"
 
 const store = useStore();
 const currentSection = computed(() => store.getters.CURRENT_SECTION);

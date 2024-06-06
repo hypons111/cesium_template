@@ -135,7 +135,8 @@ function remove(node, data) {
   height: calc(100vh - 6em - 2em);
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: rgba(var(--BLACK), 0.75));
+
+  background-color: rgba(var(--BLACK), 0.75);
   border: 2px solid rgb(var(--CYAN));
 
   .el-tree {

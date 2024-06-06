@@ -1,5 +1,5 @@
 <template>
-  <div id="stackHorizontalBarChart" class="chartContainer">
+  <div id="DoughnutChart" class="chartContainer small">
 
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
@@ -26,59 +26,54 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
+import "@/assets/css/chart.css"
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
-  title: "Stack Horizontal Bar Chart S",
-  yData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  title: "Doughnut Chart S",
+  xData: ['A', 'B', 'C', 'D', 'E'],
   series: [
     {
-      name: 'A',
-      type: 'bar',
-      stack: 'total', // total 等於 data 的值合拼在同一條 bar 上
+      type: 'pie',
+      center: ['57.5%', '52.5%'],
+      radius: ['20%', '75%'],
+      data: [
+        {
+          name: 'A',
+          value: 120,
+        },
+        {
+          name: 'B',
+          value: 220
+        },
+        {
+          name: 'C',
+          value: 150
+        },
+        {
+          name: 'D',
+          value: 320
+        },
+        {
+          name: 'E',
+          value: 820
+        }
+      ],
+      /* pie 旁邊的文字 */
       label: {
-        show: true // 是否在 bar 顯示 data 的值
+        formatter: '{b} : {c}',
+        fontSize: 12,
+        color: 'white'
       },
-      data: [320, 302, 301, 334, 390, 330, 320]
-    },
-    {
-      name: 'B',
-      type: 'bar',
-      stack: 'total',
-      label: {
-        show: true
+      /* pie 旁邊的線 */
+      labelLine: {
+        length: 5,
+        length2: 5,
       },
-      data: [120, 132, 101, 134, 90, 230, 210]
-    },
-    {
-      name: 'C',
-      type: 'bar',
-      stack: 'total',
-      label: {
-        show: true
-      },
-      data: [220, 182, 191, 234, 290, 330, 310]
-    },
-    {
-      name: 'D',
-      type: 'bar',
-      stack: 'total',
-      label: {
-        show: true
-      },
-      data: [150, 212, 201, 154, 190, 330, 410]
-    },
-    {
-      name: 'E',
-      type: 'bar',
-      stack: 'total',
-      label: {
-        show: true
-      },
-      data: [820, 832, 901, 934, 1290, 1330, 1320]
     }
-  ],
-});
+  ]
+}
+);
 
 function setChart() {
   const chart = echarts.init(chartContainer.value);
@@ -91,47 +86,29 @@ function setChart() {
         color: 'white'
       }
     },
-
     tooltip: {
-      trigger: 'axis', // 'axis' / 'item'
-      formatter: 'Label : {a} <br/> Y軸 : {b} <br/> 值 : {c}', // 可以放各個軸的參數 
-      axisPointer: {
-        type: 'shadow' // 'shadow' / 'line'
-      }
+      trigger: 'item',
+      // formatter: 'Label : {a} <br/> Y軸 : {b} <br/> 值 : {c}', // 可以放各個軸的參數 
     },
     /* 刪除 legend 代表不顯示每種顏色代表的屬性 */
     legend: {
-      bottom: '5%',
+      orient: 'vertical',
+      left: '3%',
+      top: 'center',
       textStyle: {
         color: 'white'
       }
     },
-    grid: {
-      left: '5%',
-      right: '7.25%',
-      top: '17.5%',
-      bottom: '17.5%',
-      containLabel: true // 屬性是否包含在 grid 內
+    series: fakeChartData.value.series,
+    textStyle: {
+      color: 'white'
     },
+
     toolbox: {
       feature: {
         // saveAsImage: {}
       }
     },
-    xAxis: {
-      type: 'value'
-    },
-
-    yAxis: {
-      type: 'category',
-      data: fakeChartData.value.yData
-    },
-
-    series: fakeChartData.value.series,
-
-    textStyle: {
-      color: 'white'
-    }
   });
 }
 
@@ -142,5 +119,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-#stackHorizontalBarChart {}
+#DoughnutChart {}
 </style>

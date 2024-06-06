@@ -1,5 +1,5 @@
 <template>
-  <div id="DoughnutChart" class="chartContainer">
+  <div id="StackedLineChart" class="chartContainer small">
 
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
@@ -11,7 +11,7 @@
     </div>
 
     <div id="chart" ref="chartContainer"></div>
-
+    
     <div id="bottomPatternContainer" class="patternContainer">
       <svg id="bottomPattern" class="pattern">
         <polyline class="filled" points="1,25 1,39 15,39 1,25 1,39" /> <!-- 左下三角形 -->
@@ -26,49 +26,42 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
+import "@/assets/css/chart.css"
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
-  title: "Doughnut Chart L",
-  xData: ['A', 'B', 'C', 'D', 'E'],
+  title: "Stacked Line Chart S",
+  xData: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   series: [
     {
-      type: 'pie',
-      center: ['57.5%', '52.5%'],
-      radius: ['20%', '75%'],
-      data: [
-        {
-          name: 'A',
-          value: 120,
-        },
-        {
-          name: 'B',
-          value: 220
-        },
-        {
-          name: 'C',
-          value: 150
-        },
-        {
-          name: 'D',
-          value: 320
-        },
-        {
-          name: 'E',
-          value: 820
-        }
-      ],
-      /* pie 旁邊的文字 */
-      label: {
-        formatter: '{b} : {c}',
-        fontSize: 12,
-        color: 'white'
-      },
-      /* pie 旁邊的線 */
-      labelLine: {
-        length: 5,
-        length2: 5,
-      },
+      name: 'A',
+      type: 'line',
+      stack: 'Total',
+      data: [120, 132, 101, 134, 90, 230, 210]
+    },
+    {
+      name: 'B',
+      type: 'line',
+      stack: 'Total',
+      data: [220, 182, 191, 234, 290, 330, 310]
+    },
+    {
+      name: 'C',
+      type: 'line',
+      stack: 'Total',
+      data: [150, 232, 201, 154, 190, 330, 410]
+    },
+    {
+      name: 'D',
+      type: 'line',
+      stack: 'Total',
+      data: [320, 332, 301, 334, 390, 330, 320]
+    },
+    {
+      name: 'E',
+      type: 'line',
+      stack: 'Total',
+      data: [820, 932, 901, 934, 1290, 1330, 1320]
     }
   ]
 }
@@ -86,28 +79,42 @@ function setChart() {
       }
     },
     tooltip: {
-      trigger: 'item',
-      // formatter: 'Label : {a} <br/> Y軸 : {b} <br/> 值 : {c}', // 可以放各個軸的參數 
+      trigger: 'axis', // 'axis' / 'item'
     },
     /* 刪除 legend 代表不顯示每種顏色代表的屬性 */
     legend: {
-      orient: 'vertical',
-      left: '3%',
-      top: 'center',
+      bottom: '5%',
       textStyle: {
         color: 'white'
       }
     },
-    series: fakeChartData.value.series,
-    textStyle: {
-      color: 'white'
+    grid: {
+      left: '5%',
+      right: '7.25%',
+      top: '20%',
+      bottom: '17.5%',
+      containLabel: true // 屬性是否包含在 grid 內
     },
-
     toolbox: {
       feature: {
         // saveAsImage: {}
       }
     },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: fakeChartData.value.xData
+    },
+
+    yAxis: {
+      type: 'value'
+    },
+
+    series: fakeChartData.value.series,
+
+    textStyle: {
+      color: 'white'
+    }
   });
 }
 
@@ -118,5 +125,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-#DoughnutChart {}
+#StackedLineChart {}
 </style>

@@ -1,6 +1,15 @@
+.small {
+  height: calc(100% / 3 - 0.5em);
+}
+.normal {
+  height: calc((100% / 3) * 1.5 - 0.5em);
+}
+.large {
+  height: calc((100% / 3) * 2 - 0.5em);
+}
+
 .chartContainer {
   width: 25em;
-  height: calc(100% / 3 - 0.5em);
   display: flex;
   flex-direction: column;
   justify-content: space-between;

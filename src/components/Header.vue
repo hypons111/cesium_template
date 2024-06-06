@@ -1,24 +1,9 @@
 <template>
   <div id="header">
-
+    
     <div id="headerRow_1" class="headerRow">
-
-      <div id="headerAsideLeft" class="headerAside">
-        <el-select class="el_select" v-model="value" placeholder="OPTION" @change="switchModel(this)">
-          <el-option class="el_option" v-for="item in headerAsideLeftOptions" :key="item.value" :label="item.label"
-            :value="item.value"></el-option>
-        </el-select>
-      </div>
-
       <div id="headerMain">
         <p>{{ projectName }}</p>
-      </div>
-
-      <div id="headerAsideRight" class="headerAside">
-        <buttton @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</buttton>
-        <buttton @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</buttton>
-        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />設備</buttton>
-        <buttton><font-awesome-icon :icon="['fas', 'door-closed']" />視角</buttton>
       </div>
     </div>
 
@@ -31,41 +16,16 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useStore } from "vuex"
-import Clock from "@/components/tools/Clock.vue";
-import Marquee from "@/components/tools/Marquee.vue";
+import Clock from "@/components/parts/Clock.vue";
+import Marquee from "@/components/parts/Marquee.vue";
 import { patrolHandler, resetCamera } from '@/assets/javascript/cesiumUtils';
+import { settings } from "@/assets/javascript/cesiumSettings"
 
 const store = useStore();
 
 const projectName = ref(process.env.VUE_APP_PROJECT_NAME);
-
-const headerAsideLeftOptions = [
-  {
-    label: 'ALL',
-    value: ''
-  },{
-    label: 'Model 1',
-    value: 2597627
-  },{
-    label: 'Model 2',
-    value: 2597631
-  },{
-    label: 'Model 3',
-    value: 2597631
-  },{
-    label: 'Model 4',
-    value: 2597632
-  },{
-    label: 'Model 5',
-    value: 2597644
-  },
-]
-
-function switchModel(t) {
-  store.commit("SET_CURRENT_MODEL", t.value);
-}
 </script>
 
 <style lang="scss" scoped>
@@ -74,7 +34,6 @@ function switchModel(t) {
   height: 6.5em;
   display: flex;
   flex-direction: column;
-  z-index: 10;
 
   .headerRow {
     width: 100%;
@@ -104,42 +63,6 @@ function switchModel(t) {
         font-weight: bolder;
         line-height: 1.5em;
       }
-    }
-
-    .headerAside {
-      width: 20%;
-      height: 100%;
-      position: relative;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 1em;
-
-      ::v-deep .el-select__wrapper {
-        font-size: 1em;
-        font-weight: bold;
-        padding: 0.75em;
-        box-shadow: none;
-        background-color: rgba(var(--BLACK), 0.5);
-        border: 2px solid rgb(var(--CYAN));
-        border-radius: 0.25em;
-        
-        * {
-          color: rgb(var(--CYAN));
-        }
-      }
-    }
-
-    #headerAsideRight {
-      buttton {
-        color: rgb(var(--CYAN));
-        padding: 0.5em;
-        background-color: rgba(var(--BLACK), 0.5);
-        border: 2px solid rgb(var(--CYAN));
-        border-radius: 0.25em;
-      }
-
-      // border: 1px solid red;
     }
   }
 
