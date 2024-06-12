@@ -1,12 +1,7 @@
 import { ref, computed, nextTick } from "vue";
 import * as Cesium from "cesium";
 import axios from "axios";
-import {
-  settings,
-  hidePanel,
-  hideSpace,
-  hideEarth
-} from "./cesiumSettings";
+import { settings, hidePanel, hideSpace, hideEarth } from "./cesiumSettings";
 import store from "@/store/index"; // js 模塊要用這方法讀入 store
 import BLUE_TAG from "@/assets/image/blue.png"; // 載入 billboard icon
 import BROWN_TAG from "@/assets/image/brown.png"; // 載入 billboard icon
@@ -14,6 +9,7 @@ import BROWN_TAG from "@/assets/image/brown.png"; // 載入 billboard icon
 const allModel = store.getters.ALL_MODEL;
 const currentModel = computed(() => store.getters.CURRENT_MODEL); // 正在顯示的模型
 const entityArray = []; // 全部模型的 entity
+const tagEntity  = []; // 全部 label 和 billboard 的 entity
 /* 滑鼠右鍵跳出的 panel 位置 */
 export const cesiumMenuData = ref({
   show: false,
@@ -21,7 +17,7 @@ export const cesiumMenuData = ref({
   y: 0,
   longitude: 0,
   latitude: 0,
-  height: 0
+  height: 0,
 });
 let featureHoverStatus = undefined;
 
@@ -29,8 +25,8 @@ let featureHoverStatus = undefined;
 export async function initialCesium() {
   window.viewer = await setViewer("viewerContainer"); // 建立 viewer
   await addGLTF(); // 加載模型
-  await fetchTagsAndHandle(); // 加載 label 和 billboard
-  await setMouseEventListener(); //設定 event listener
+  // await fetchTagsAndHandle(); // 加載 label 和 billboard
+  await setMouseEventListener(); // 設定 event listener
 }
 
 /* 建立 viewer */
@@ -65,19 +61,23 @@ async function addGLTF() {
   let entity = undefined;
 
   // try {
-  const modelSetting = model.modelSettingArray;
+  const modelSetting = model.ModalArray;
   let MODEL_URI = undefined;
 
   for (let i = 0; i < model.ModalArray.length; i++) {
-    if (currentModel.value === allModel || currentModel.value === model.ModalArray[i].label) {
+    if (
+      currentModel.value === allModel ||
+      currentModel.value === model.ModalArray[i].label
+    ) {
       /* 切換模型 */
       if (model.modelType === "local") {
         MODEL_URI = `./gltf/${model.ModalArray[i].fileName}.gltf`; // local model
       } else if (model.modelType === "ion") {
-        MODEL_URI = await Cesium.IonResource.fromAssetId(model.ModalArray[i].fileName); // ion model
+        MODEL_URI = await Cesium.IonResource.fromAssetId(
+          model.ModalArray[i].fileName
+        ); // ion model
       }
     }
-
     const position = Cesium.Cartesian3.fromDegrees(
       modelSetting[i].x,
       modelSetting[i].y,
@@ -169,7 +169,7 @@ function setMouseEventListener() {
             y: y,
             longitude: longitude,
             latitude: latitude,
-            height: height
+            height: height,
           };
           nextTick(() => {
             cesiumMenuData.value.show = true;
@@ -185,20 +185,28 @@ function setMouseEventListener() {
           const feature = viewer.scene.pick(movement.endPosition);
           if (feature && feature.primitive.constructor.name === "Model") {
             entityArray.forEach((entity) => {
-              entity.model.color = Cesium.Color.fromCssColorString("rgba(250, 250, 250, 0.25)");
-             });
-             feature.id.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
-             featureHoverStatus = true;
+              entity.model.color = Cesium.Color.fromCssColorString(
+                "rgba(250, 250, 250, 0.25)"
+              );
+            });
+            feature.id.model.color = Cesium.Color.fromCssColorString(
+              "rgba(255, 255, 255, 1)"
+            );
+            featureHoverStatus = true;
           } else if (featureHoverStatus !== undefined) {
             featureHoverStatus = undefined;
             entityArray.forEach((entity) => {
-              entity.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
+              entity.model.color = Cesium.Color.fromCssColorString(
+                "rgba(255, 255, 255, 1)"
+              );
             });
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       } else {
         entityArray.forEach((entity) => {
-          entity.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
+          entity.model.color = Cesium.Color.fromCssColorString(
+            "rgba(255, 255, 255, 1)"
+          );
         });
       }
       resolve(true);
@@ -225,34 +233,77 @@ function fetchTagsAndHandle() {
 }
 
 /* 放置 tag (label + billBoard) */
-function addTag(tag) {
+export function addTag(tag) {
   /* 用來選擇已載入的 billboard icon */
   const billBoardIcons = {
-    "BLUE_TAG" : BLUE_TAG,
-    "BROWN_TAG" : BROWN_TAG
-  }
+    BLUE_TAG: BLUE_TAG,
+    BROWN_TAG: BROWN_TAG,
+  };
   const entity = viewer.entities.add({
     position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
     label: {
       text: tag.label,
-      font: "24px Helvetica",
+      font: `${tag.s*20}em Helvetica`,
       fillColor: Cesium.Color.WHITE,
       outlineColor: Cesium.Color.BLACK,
       outlineWidth: 2,
       style: Cesium.LabelStyle.FILL_AND_OUTLINE,
       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      pixelOffset: new Cesium.Cartesian2(0, -50), // 與 billborad 距離
+      pixelOffset: new Cesium.Cartesian2(0, (0-tag.s*1000)), // 與 billborad 距離
     },
     billboard: {
       image: billBoardIcons[tag.billboard],
-      scale: 0.05,
+      scale: tag.s,
       color: Cesium.Color.WHITE,
       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
     },
   });
   entity.data = tag;
+  tagEntity.push(entity);
+}
+
+/* 移除 tag (label + billBoard) */
+export function removeTagEntity() {
+  tagEntity.forEach(tag => {
+    viewer.entities.remove(tag);
+  })
+  tagEntity.length = 0;
+}
+
+/* 加入矩形 */
+export async function addRectangleEntity() {
+  const rectangleArray = settings.entity.rectangleArray;
+  rectangleArray.forEach((rectangle) => {
+    viewer.entities.add({
+      rectangle: {
+        coordinates: Cesium.Rectangle.fromDegrees(
+          rectangle.w,
+          rectangle.s,
+          rectangle.e,
+          rectangle.n
+        ),
+        material: Cesium.Color[rectangle.color].withAlpha(rectangle.opacity),
+      },
+    });
+  });
+}
+
+/* 加入圓形 */
+export async function addCircleEntity() {
+  const circleArray = settings.entity.circleArray;
+  circleArray.forEach((circle) => {
+    viewer.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(circle.x, circle.y, 0),
+      ellipse: {
+        semiMinorAxis: circle.length1,
+        semiMajorAxis: circle.length2,
+        height: circle.z,
+        material: Cesium.Color[circle.color].withAlpha(circle.opacity),
+      },
+    });
+  });
 }
 
 /* 巡邏 */
@@ -264,7 +315,11 @@ export async function patrolHandler() {
     patrol.y,
     patrol.z
   );
-  const orientation = new Cesium.HeadingPitchRange(patrol.h, patrol.p, patrol.r);
+  const orientation = new Cesium.HeadingPitchRange(
+    patrol.h,
+    patrol.p,
+    patrol.r
+  );
 
   viewer.camera.setView({
     destination: destination,
@@ -328,7 +383,16 @@ export async function resetCamera() {
   });
 }
 
-export default { cesiumMenuData, initialCesium, patrolHandler, resetCamera };
+export default {
+  cesiumMenuData,
+  initialCesium,
+  patrolHandler,
+  resetCamera,
+  addTag,
+  addRectangleEntity,
+  addCircleEntity,
+  removeTagEntity,
+};
 
 /* Forbidden Forbidden Forbidden Forbidden Forbidden */
 
@@ -350,7 +414,10 @@ async function add3DTiles() {
     if (settings.model.modelType === "local") {
       // local model
       for (const model of settings.model.localModalArray) {
-        if (currentModel.value.fileName === "" || model.name === currentModel.value.fileName) {
+        if (
+          currentModel.value.fileName === "" ||
+          model.name === currentModel.value.fileName
+        ) {
           // 切左換模型/顯示全部模型
           const tileset = await Cesium.Cesium3DTileset.fromUrl(
             `/3DTiles/${model.name}/tileset.json`

@@ -1,5 +1,5 @@
 <template>
-  <div id="DoughnutChart" class="chartContainer normal">
+  <div id="DoughnutChart" class="svgContainer normal">
 
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
@@ -27,6 +27,7 @@
 import { computed, ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
 import "@/assets/css/chart.css"
+import "@/assets/css/svg.css"
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
@@ -75,6 +76,10 @@ const fakeChartData = ref({
 }
 );
 
+onMounted(() => {
+  setChart();
+})
+
 function setChart() {
   const chart = echarts.init(chartContainer.value);
   chart.setOption({
@@ -112,9 +117,7 @@ function setChart() {
   });
 }
 
-onMounted(() => {
-  setChart();
-})
+
 
 </script>
 

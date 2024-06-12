@@ -5,7 +5,8 @@
     </div>
 
     <div id="mainContainer">
-      <Cesium :key="currentModel" v-if="currentSection === 'section1'" />
+      <Cesium :key="currentModel" v-if="currentSection !== 'section2'" />
+      <!-- <Heatmap :key="currentModel" v-if="currentSection === 'section1'" /> -->
       <Table v-if="currentSection === 'section2'" />
     </div>
 
@@ -34,6 +35,7 @@ import Header from "@/components/Header.vue"
 import LeftPanel from "@/components/LeftPanel.vue"
 import RightPanel from "@/components/RightPanel.vue"
 import Cesium from "@/components/Cesium.vue"
+import Heatmap from "@/components/Heatmap.vue"
 import Modal from "@/components/Modal.vue"
 import Table from "@/components/Table.vue"
 import Footer from "@/components/Footer.vue"

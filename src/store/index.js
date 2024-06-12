@@ -1,11 +1,10 @@
-import { DEFAULT_DYNAMIC_LIST_ITEM_SIZE } from 'element-plus/es/components/virtual-list/src/defaults';
 import { createStore } from 'vuex'
 
 const defaultModel = "ALL";
 
 export default createStore({
   state: {
-    CURRENT_SECTION: "section1",
+    CURRENT_SECTION: "section4",
     ALL_MODEL: "ALL",
     CURRENT_MODEL: defaultModel,
     CURRENT_MAIN_COMPONENT: "section1",

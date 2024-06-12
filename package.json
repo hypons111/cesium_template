@@ -16,6 +16,7 @@
     "cesium": "^1.115.0",
     "echarts": "^5.5.0",
     "element-plus": "^2.7.1",
+    "heatmap.js": "^2.0.5",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"

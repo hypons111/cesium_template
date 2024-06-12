@@ -14,8 +14,6 @@
     <div id="rightAside" class="aside">
       <button @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</button>
       <button @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</button>
-      <button><font-awesome-icon :icon="['fas', 'door-closed']" />設備</button>
-      <button><font-awesome-icon :icon="['fas', 'door-closed']" />視角</button>
     </div>
   </div>
 
@@ -37,22 +35,21 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex"
-import { cesiumMenuData, initialCesium, patrolHandler, resetCamera } from '@/assets/javascript/cesiumUtils';
+import { cesiumMenuData, initialCesium, patrolHandler, resetCamera, addRectangleEntity, addCircleEntity } from '@/assets/javascript/cesiumUtils';
 import { settings } from "@/assets/javascript/cesiumSettings"
 
 const store = useStore();
-
 const placeholder = computed(() => store.getters.CURRENT_MODEL);
 const allModel = store.getters.ALL_MODEL;
 const leftAsideOptions = ref([]);
 
-onMounted(() => {
-  initialCesium();
-  fetchModelList();
+onMounted(async () => {
+  await initialCesium();
+  await fetchModelList();
 });
 
 function fetchModelList() {
-  leftAsideOptions.value.push({ label:allModel });
+  leftAsideOptions.value.push({ label: allModel });
   settings.model.ModalArray.forEach(({ label, fileName }) => {
     leftAsideOptions.value.push({
       label: label,
@@ -62,7 +59,7 @@ function fetchModelList() {
 }
 
 function switchModel(t) {
-  if(t.value === allModel) {
+  if (t.value === allModel) {
     store.commit("SET_CURRENT_MODEL", allModel);
   } else {
     const currentModel = settings.model.ModalArray.filter(({ label }) => label === t.value)[0];
@@ -118,11 +115,13 @@ function switchModel(t) {
 #rightAside {
   top: 0;
   right: 0;
+  justify-content: flex-start;
 
   button {
     height: 2.25rem;
     color: rgb(var(--CYAN));
     padding: 0.5em;
+    margin-left: 1em;
     background-color: rgba(var(--BLACK), 0.5);
     border: 2px solid rgb(var(--CYAN));
     border-radius: 0.25em;

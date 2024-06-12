@@ -1,5 +1,5 @@
 <template>
-  <div id="StackedLineChart" class="chartContainer small">
+  <div id="StackedLineChart" class="svgContainer small">
 
     <div id="topPatternContainer" class="patternContainer">
       <svg id="topPattern" class="pattern">
@@ -27,6 +27,7 @@
 import { computed, ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
 import "@/assets/css/chart.css"
+import "@/assets/css/svg.css"
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
