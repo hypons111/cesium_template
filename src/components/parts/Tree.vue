@@ -23,8 +23,7 @@
         </el-form-item>
       </el-form>
 
-      <el-tree :data="treeData" show-checkbox node-key="id" default-expand-all :expand-on-click-node="false"
-        :render-content="renderContent" />
+      <el-tree :data="tagData" default-expand-all :expand-on-click-node="false" :render-content="renderTree" />
     </div>
 
     <div id="treeFooterContainer">FOOTER</div>
@@ -33,88 +32,139 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import 'element-plus/dist/index.css'
+import { onMounted, ref } from 'vue';
+import 'element-plus/dist/index.css';
 import { addTag, removeTagEntity } from '@/assets/javascript/cesiumUtils';
-import axios from "axios"
+import axios from "axios";
 
 /* 列表名稱 */
-const TreeTitle = ref("設備清單")
+const TreeTitle = ref("設備清單");
 /* 列表資料 */
-const treeData = ref([])
-/* el-tree 新增的節點起始 id */
-let id = 1000
+const tagData = ref([]);
 /* 查詢關鍵字 */
 const keyword = ref('');
-
+/* el-tree 新增的節點起始 id */
+let id = 1000;
+let treeNodeLevel = 0
 onMounted(() => {
   switchTree("device");
 })
 
-function switchTree(tree) {
-  const treeTypes = {
-    device : "設備清單",
-    camera : "視角清單"
-  }
-  TreeTitle.value = treeTypes[tree];
-  axios
-    .get(`/json/fake_${tree}.json`)
-    .then(response => {
-      const tagData = response.data.data;
-      treeData.value = tagData; // 顯示 tree 列表
-      removeTagEntity();
-      return tagData
-    })
-    .then(tagData => {
-      tagDataHandler(tagData);
-    })
-    .then(() => {
-      resetTagEntity();
-    })
-    .catch(error => {
-      console.error("[ERROR] :", error);
-    });
-}
-
-function tagDataHandler(tagData) {
-  tagData.forEach(tag => {
-    if (tag.billboard) {
-      addTag(tag);
-    }
-    if (tag.children) {
-      tagDataHandler(tag.children)
-    }
-  })
-}
-
-
-function query() {
-  console.log(keyword.value)
-};
-
-function reset() {
-  keyword.value = ''
-}
-
-
-// 產生 tree 內容
-function renderContent(h, { node, data, store }) {
+// 產生 tree
+function renderTree(h, { node, data }) {
+  node.status = data.status;
   return h('div', { class: 'custom-tree-node' },
     h('span', null, node.label),
-    h('span',
+    h(
+      'span',
       { class: 'custom-tree-row' },
-      // h('a', { onClick: () => onClickEye(data) }, '眼'),
-      h('a', { class: "eye", onClick: () => onClickEye(data) }, ""), // 增加節點
+      h('a', { id: data.id, class: `eye${data.status}`, onClick: () => onClickEye(data, node) }, ""),
       h('a', { class: 'plus', onClick: () => append(data) }, '+'), // 增加節點
       h('a', { class: 'minus', onClick: () => remove(node, data) }, '-')  // 移除節點
     )
   )
 }
 
-// 點擊眼睛 icon
-function onClickEye(data) {
-  console.log(data)
+/* 切換不同的樹狀圖 */
+function switchTree(tree) {
+  const treeTypes = {
+    device: "設備清單",
+    camera: "視角清單"
+  }
+  TreeTitle.value = treeTypes[tree];
+  axios
+    .get(`/json/fake_${tree}.json`)
+    .then(response => {
+      const data = response.data.data;
+      tagData.value = data;
+      removeTagEntity();
+      addTagHandler(data);
+    })
+    .catch(error => {
+      console.error("[ERROR] :", error);
+    });
 }
+
+/* 找出要顯示的 tag */
+function addTagHandler(data) {
+  data.forEach(tag => {
+    if (tag.status !== 0) {
+      if (tag.billboard) {
+        addTag(tag);
+      }
+      if (tag.children) {
+        addTagHandler(tag.children)
+      }
+    }
+  })
+}
+
+// 點擊眼睛 icon
+async function onClickEye(nodeData, node) {
+
+  /* 清除全部 tag */
+  removeTagEntity();
+
+  /* 取得被點擊 node 的新 status */
+  const newStatus = nodeData.status === 0 ? 2 : 0;
+  node.data.status = newStatus;
+
+  /* 改變被點擊的 node 的 children 的 status */
+  const updateChildrenStatus = node => {
+    if (node.childNodes) {
+      node.childNodes.forEach(childNode => {
+        childNode.data.status = newStatus;
+        updateChildrenStatus(childNode);
+      })
+    }
+  }
+
+  /* 改變被點擊的 node 的 parent 的 status*/
+  const updatePerantStatus = node => {
+    if (node.parent) {
+      const parentNode = node.parent;
+      let counter = 0;
+      parentNode.childNodes.forEach(children => {
+        if(children.status === 2) {
+          counter += 1;
+        } else if (children.status === 1){
+          counter -= 1;
+        }
+      })
+      switch (counter) {
+        case parentNode.childNodes.length:
+          parentNode.data.status = 2;
+          break;
+        case 0:
+          parentNode.data.status = 0;
+          break;
+        default:
+          parentNode.data.status = 1;
+          break;
+      }
+      /* 等待 child node 的 status 準備好才更新 parent node 的 status */
+      setTimeout(() => {
+        updatePerantStatus(parentNode);
+      }, 0)
+    }
+  }
+
+  /* 不要刪除 await */
+  await updateChildrenStatus(node);
+  await updatePerantStatus(node);
+  await addTagHandler(tagData.value);
+}
+
+// 查詢關鍵字
+function query() {
+  console.log(keyword.value)
+};
+
+// 重設關鍵字 input
+function reset() {
+  keyword.value = ''
+}
+
 
 // 增加 tree 節點
 // 參考 renderContent() 
@@ -124,7 +174,7 @@ function append(data) {
     data.children = []
   }
   data.children.push(newChild)
-  treeData.value = [...treeData.value]
+  tagData.value = [...tagData.value]
 }
 
 // 移除 tree 節點
@@ -134,7 +184,7 @@ function remove(node, data) {
   const children = parent.data.children || parent.data
   const index = children.findIndex((d) => d.id === data.id)
   children.splice(index, 1)
-  treeData.value = [...treeData.value]
+  tagData.value = [...tagData.value]
 }
 </script>
 
@@ -190,13 +240,28 @@ function remove(node, data) {
       justify-content: space-between;
       /* border: 1px solid lime; */
 
-      .eye {
+      .eye0 {
         width: 1em;
         height: 100%;
-        background-image: url("@/assets/image/eye-solid.svg");
+        background-image: url("@/assets/image/eye0.svg");
         background-repeat: no-repeat;
         background-position: center 60%;
-        /* border: 1px solid cyan; */
+      }
+
+      .eye1 {
+        width: 1em;
+        height: 100%;
+        background-image: url("@/assets/image/eye1.svg");
+        background-repeat: no-repeat;
+        background-position: center 60%;
+      }
+
+      .eye2 {
+        width: 1em;
+        height: 100%;
+        background-image: url("@/assets/image/eye2.svg");
+        background-repeat: no-repeat;
+        background-position: center 60%;
       }
 
       .plus {
