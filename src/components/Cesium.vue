@@ -1,20 +1,27 @@
 <template>
-  <!-- cesium 容器 -->
+  <!-- 左上角 dropdown menu -->
+  <div id="leftAside" class="aside">
+    <el-select class="el_select" v-model="value" :placeholder="placeholder" @change="switchModel(this)">
+      <el-option v-for="item in leftAsideOptions" :key="item.label" :label="item.label" :value="item.label"
+        class="el_option">
+      </el-option>
+    </el-select>
+  </div>
+
+  <!-- 右上角 button group -->
+  <div id="rightAside" class="aside">
+    <button @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</button>
+    <button @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</button>
+  </div>
+
+  <!-- cesium -->
   <div id="cesium">
-    <div id="leftAside" class="aside">
-      <el-select class="el_select" v-model="value" :placeholder="placeholder" @change="switchModel(this)">
-        <el-option v-for="item in leftAsideOptions" :key="item.label" :label="item.label" :value="item.label"
-          class="el_option">
-        </el-option>
-      </el-select>
-    </div>
-
     <div id="viewerContainer"></div>
+  </div>
 
-    <div id="rightAside" class="aside">
-      <button @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</button>
-      <button @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</button>
-    </div>
+  <!-- 點位 popup modal -->
+  <div id="modalContainer" v-if="MODAL_STATUS.IS_SHOW">
+    <Modal />
   </div>
 
   <!-- 滑鼠右鍵 panel -->
@@ -33,6 +40,7 @@
 </template>
 
 <script setup>
+import Modal from "@/components/Modal.vue"
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex"
 import { cesiumMenuData, initialCesium, patrolHandler, resetCamera, addRectangleEntity, addCircleEntity } from '@/assets/javascript/cesiumUtils';
@@ -42,6 +50,7 @@ const store = useStore();
 const placeholder = computed(() => store.getters.CURRENT_MODEL);
 const allModel = store.getters.ALL_MODEL;
 const leftAsideOptions = ref([]);
+const MODAL_STATUS = computed(() => store.getters.MODAL_STATUS);
 
 onMounted(async () => {
   await initialCesium();
@@ -74,6 +83,7 @@ function switchModel(t) {
   overflow: hidden;
 }
 
+// ceiusm view
 :deep#viewerContainer {
   height: 100%;
 
@@ -81,6 +91,13 @@ function switchModel(t) {
     width: 100%;
     height: 100%;
   }
+}
+
+#modalContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .aside {

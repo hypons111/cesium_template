@@ -5,21 +5,18 @@
     </div>
 
     <div id="mainContainer">
-      <Cesium :key="currentModel" v-if="currentSection !== 'section2'" />
-      <!-- <Heatmap :key="currentModel" v-if="currentSection === 'section1'" /> -->
-      <Table v-if="currentSection === 'section2'" />
-    </div>
-
-    <div id="modalContainer" v-if="MODAL_STATUS.IS_SHOW">
-      <Modal />
+      <Cesium :key="currentModel" v-if="currentSection === 'section1' || currentSection === 'section3'" />
+      <Section2 v-if="currentSection === 'section2'" />
+      <Section4 v-if="currentSection === 'section4'" />
+      <Section5 v-if="currentSection === 'section5'" />
     </div>
 
     <div id="leftContainer">
-      <LeftPanel v-if="currentSection === 'section3'" />
+      <LeftPanel v-if="currentSection === 'section1'" />
     </div>
 
     <div id="rightContainer">
-      <RightPanel v-if="currentSection === 'section3' || currentSection === 'section4'" />
+      <RightPanel v-if="currentSection === 'section1' || currentSection === 'section3'" />
     </div>
 
     <div id="footerContainer">
@@ -32,17 +29,17 @@
 import { computed } from "vue"
 import { useStore } from "vuex"
 import Header from "@/components/Header.vue"
+import Footer from "@/components/Footer.vue"
 import LeftPanel from "@/components/LeftPanel.vue"
 import RightPanel from "@/components/RightPanel.vue"
-import Cesium from "@/components/Cesium.vue"
-import Modal from "@/components/Modal.vue"
-import Table from "@/components/Table.vue"
-import Footer from "@/components/Footer.vue"
+import Cesium from "@/components/Cesium.vue"      // 儀表板
+import Section2 from "@/components/Section2.vue"  // 事件查詢
+import Section4 from "@/components/Section4.vue"  // 航港局 AIS 系統
+import Section5 from "@/components/Section5.vue"  // 報表
 
 const store = useStore();
 const currentSection = computed(() => store.getters.CURRENT_SECTION);
 const currentModel = computed(() => store.getters.CURRENT_MODEL); // 讓 vue 知道要更新 <Cesium />
-const MODAL_STATUS = computed(() => store.getters.MODAL_STATUS);
 
 </script>
 

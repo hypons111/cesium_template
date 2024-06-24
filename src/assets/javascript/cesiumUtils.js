@@ -169,7 +169,7 @@ function setMouseEventListener() {
             y: y,
             longitude: longitude,
             latitude: latitude,
-            height: height,
+            height: height
           };
           nextTick(() => {
             cesiumMenuData.value.show = true;
@@ -185,28 +185,20 @@ function setMouseEventListener() {
           const feature = viewer.scene.pick(movement.endPosition);
           if (feature && feature.primitive.constructor.name === "Model") {
             entityArray.forEach((entity) => {
-              entity.model.color = Cesium.Color.fromCssColorString(
-                "rgba(250, 250, 250, 0.25)"
-              );
-            });
-            feature.id.model.color = Cesium.Color.fromCssColorString(
-              "rgba(255, 255, 255, 1)"
-            );
-            featureHoverStatus = true;
+              entity.model.color = Cesium.Color.fromCssColorString("rgba(250, 250, 250, 0.25)");
+             });
+             feature.id.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
+             featureHoverStatus = true;
           } else if (featureHoverStatus !== undefined) {
             featureHoverStatus = undefined;
             entityArray.forEach((entity) => {
-              entity.model.color = Cesium.Color.fromCssColorString(
-                "rgba(255, 255, 255, 1)"
-              );
+              entity.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
             });
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       } else {
         entityArray.forEach((entity) => {
-          entity.model.color = Cesium.Color.fromCssColorString(
-            "rgba(255, 255, 255, 1)"
-          );
+          entity.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
         });
       }
       resolve(true);
@@ -315,11 +307,7 @@ export async function patrolHandler() {
     patrol.y,
     patrol.z
   );
-  const orientation = new Cesium.HeadingPitchRange(
-    patrol.h,
-    patrol.p,
-    patrol.r
-  );
+  const orientation = new Cesium.HeadingPitchRange(patrol.h, patrol.p, patrol.r);
 
   viewer.camera.setView({
     destination: destination,
@@ -383,11 +371,51 @@ export async function resetCamera() {
   });
 }
 
+/* 移動視角 */
+export async function setCamera(cameraData) {
+  cesiumMenuData.value.show = false;
+  const destination = Cesium.Cartesian3.fromDegrees(
+    cameraData.x,
+    cameraData.y,
+    cameraData.z
+  );
+  const orientation = new Cesium.HeadingPitchRange(
+    cameraData.h,
+    cameraData.p,
+    cameraData.r
+  );
+  viewer.camera.setView({
+    destination: destination,
+    orientation: orientation,
+  });
+}
+
+/* 移動視角 */
+export async function flyCamera(cameraData) {
+  cesiumMenuData.value.show = false;
+  const destination = Cesium.Cartesian3.fromDegrees(
+    cameraData.x,
+    cameraData.y,
+    cameraData.z
+  );
+  const orientation = new Cesium.HeadingPitchRange(
+    cameraData.h,
+    cameraData.p,
+    cameraData.r
+  );
+  viewer.camera.flyTo({
+    destination: destination,
+    orientation: orientation,
+  });
+}
+
 export default {
   cesiumMenuData,
   initialCesium,
   patrolHandler,
   resetCamera,
+  setCamera,
+  flyCamera,
   addTag,
   addRectangleEntity,
   addCircleEntity,
@@ -398,131 +426,127 @@ export default {
 
 /* 3D Tiles 模型 */
 /* ion 資源：模型大小，角度，縮放在 cesium ion 上設定 */
-async function add3DTiles() {
-  try {
-    const camera = settings.camera;
-    let primitives = undefined;
-    let destination = undefined;
-    let orientation = new Cesium.HeadingPitchRange(
-      camera.h,
-      camera.p,
-      camera.r
-    );
+// async function add3DTiles() {
+//   try {
+//     const camera = settings.camera;
+//     let primitives = undefined;
+//     let destination = undefined;
+//     let orientation = new Cesium.HeadingPitchRange(
+//       camera.h,
+//       camera.p,
+//       camera.r
+//     );
 
-    /* 使用 local/ion 模型 */
-    /* 請在 cesiumConfig.js 設定 */
-    if (settings.model.modelType === "local") {
-      // local model
-      for (const model of settings.model.localModalArray) {
-        if (
-          currentModel.value.fileName === "" ||
-          model.name === currentModel.value.fileName
-        ) {
-          // 切左換模型/顯示全部模型
-          const tileset = await Cesium.Cesium3DTileset.fromUrl(
-            `/3DTiles/${model.name}/tileset.json`
-          ); // 從 URL 加載 3D Tiles 數據
-          primitives = viewer.scene.primitives.add(tileset); // 將加載的數據集添加到 Cesium 的場景中的 primitives 物件
-          const cartographic = Cesium.Cartographic.fromCartesian(
-            tileset.boundingSphere.center
-          ); // cartographic ＝ 模型邊界盒中心點轉換成的經度、緯度、高度 (模型原始位置)
-          const original = Cesium.Cartesian3.fromRadians(
-            cartographic.longitude,
-            cartographic.latitude,
-            0.0
-          ); // original = cartographic 轉換成的笛卡兒座標
-          const offset = Cesium.Cartesian3.fromDegrees(
-            model.x,
-            model.y,
-            model.z
-          ); // offset = 計算新的偏移的笛卡兒坐標
-          const translation = Cesium.Cartesian3.subtract(
-            offset,
-            original,
-            new Cesium.Cartesian3()
-          ); // translation = 從原始位置到新位置的位移向量
-          tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation); // 套用 translation
-        }
-      }
-    } else if (settings.model.modelType === "ion") {
-      // ion model
-      for (const model of settings.model.ionModalArray) {
-        primitives = viewer.scene.primitives.add(
-          await Cesium.Cesium3DTileset.fromIonAssetId(model)
-        );
-      }
-    }
+//     /* 使用 local/ion 模型 */
+//     /* 請在 cesiumConfig.js 設定 */
+//     if (settings.model.modelType === "local") {
+//       // local model
+//       for (const model of settings.model.localModalArray) {
+//         if (currentModel.value.fileName === "" || model.name === currentModel.value.fileName) {
+//           // 切左換模型/顯示全部模型
+//           const tileset = await Cesium.Cesium3DTileset.fromUrl(
+//             `/3DTiles/${model.name}/tileset.json`
+//           ); // 從 URL 加載 3D Tiles 數據
+//           primitives = viewer.scene.primitives.add(tileset); // 將加載的數據集添加到 Cesium 的場景中的 primitives 物件
+//           const cartographic = Cesium.Cartographic.fromCartesian(
+//             tileset.boundingSphere.center
+//           ); // cartographic ＝ 模型邊界盒中心點轉換成的經度、緯度、高度 (模型原始位置)
+//           const original = Cesium.Cartesian3.fromRadians(
+//             cartographic.longitude,
+//             cartographic.latitude,
+//             0.0
+//           ); // original = cartographic 轉換成的笛卡兒座標
+//           const offset = Cesium.Cartesian3.fromDegrees(
+//             model.x,
+//             model.y,
+//             model.z
+//           ); // offset = 計算新的偏移的笛卡兒坐標
+//           const translation = Cesium.Cartesian3.subtract(
+//             offset,
+//             original,
+//             new Cesium.Cartesian3()
+//           ); // translation = 從原始位置到新位置的位移向量
+//           tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation); // 套用 translation
+//         }
+//       }
+//     } else if (settings.model.modelType === "ion") {
+//       // ion model
+//       for (const model of settings.model.ionModalArray) {
+//         primitives = viewer.scene.primitives.add(
+//           await Cesium.Cesium3DTileset.fromIonAssetId(model)
+//         );
+//       }
+//     }
 
-    /* 鏡頭使用 模型/座標 */
-    /* 請在 cesiumConfig.js 設定 */
-    if (camera.zoomTo === "model" || !settings.viewer.showEarth) {
-      destination = primitives.boundingSphere.center; // 3D Tileset 包圍盒的中心位置
-    } else if (camera.zoomTo === "coordinate") {
-      destination = Cesium.Cartesian3.fromDegrees(camera.x, camera.y, camera.z); // zoom 的位置, 可以是 model / Cartesian座標
-    }
+//     /* 鏡頭使用 模型/座標 */
+//     /* 請在 cesiumConfig.js 設定 */
+//     if (camera.zoomTo === "model" || !settings.viewer.showEarth) {
+//       destination = primitives.boundingSphere.center; // 3D Tileset 包圍盒的中心位置
+//     } else if (camera.zoomTo === "coordinate") {
+//       destination = Cesium.Cartesian3.fromDegrees(camera.x, camera.y, camera.z); // zoom 的位置, 可以是 model / Cartesian座標
+//     }
 
-    /* 鏡頭使用 set/fly 方法移動 */
-    /* 請在 cesiumConfig.js 設定 */
-    if (camera.zoomType === "setView") {
-      let offset = primitives.boundingSphere.radius * camera.setOffset;
-      viewer.camera.setView({
-        destination: destination,
-        orientation: orientation,
-      });
-      viewer.camera.moveBackward(offset); // 向後移動相機，設定距離
-    } else if (camera.zoomType === "flyTo") {
-      /* Cartesian3 相加函數 */
-      /* 3D Tileset 包圍盒的中心位 + offset */
-      destination = Cesium.Cartesian3.add(
-        destination,
-        new Cesium.Cartesian3(
-          camera.flyOffset[0],
-          camera.flyOffset[1],
-          camera.flyOffset[2]
-        ),
-        new Cesium.Cartesian3() // 這個參數不要刪除, 可提高效能
-      );
-      await viewer.scene.camera.flyTo({
-        destination: destination,
-        orientation: orientation,
-        duration: camera.flyDuration,
-      });
-    }
-  } catch (error) {
-    console.log(`[add3DTiles() ERROR] : ${error}`);
-  }
-}
+//     /* 鏡頭使用 set/fly 方法移動 */
+//     /* 請在 cesiumConfig.js 設定 */
+//     if (camera.zoomType === "setView") {
+//       let offset = primitives.boundingSphere.radius * camera.setOffset;
+//       viewer.camera.setView({
+//         destination: destination,
+//         orientation: orientation,
+//       });
+//       viewer.camera.moveBackward(offset); // 向後移動相機，設定距離
+//     } else if (camera.zoomType === "flyTo") {
+//       /* Cartesian3 相加函數 */
+//       /* 3D Tileset 包圍盒的中心位 + offset */
+//       destination = Cesium.Cartesian3.add(
+//         destination,
+//         new Cesium.Cartesian3(
+//           camera.flyOffset[0],
+//           camera.flyOffset[1],
+//           camera.flyOffset[2]
+//         ),
+//         new Cesium.Cartesian3() // 這個參數不要刪除, 可提高效能
+//       );
+//       await viewer.scene.camera.flyTo({
+//         destination: destination,
+//         orientation: orientation,
+//         duration: camera.flyDuration,
+//       });
+//     }
+//   } catch (error) {
+//     console.log(`[add3DTiles() ERROR] : ${error}`);
+//   }
+// }
 
 /* 放置 label */
-function addLabel(tag) {
-  viewer.entities.add({
-    position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
-    label: {
-      text: tag.label,
-      font: "24px Helvetica",
-      fillColor: Cesium.Color.WHITE,
-      outlineColor: Cesium.Color.BLACK,
-      outlineWidth: 2,
-      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      pixelOffset: new Cesium.Cartesian2(0, -50), // 與 billborad 距離
-    },
-  });
-}
+// function addLabel(tag) {
+//   viewer.entities.add({
+//     position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
+//     label: {
+//       text: tag.label,
+//       font: "24px Helvetica",
+//       fillColor: Cesium.Color.WHITE,
+//       outlineColor: Cesium.Color.BLACK,
+//       outlineWidth: 2,
+//       style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+//       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+//       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+//       pixelOffset: new Cesium.Cartesian2(0, -50), // 與 billborad 距離
+//     },
+//   });
+// }
 
 /* 放置 billBoard */
-function addBillBoard(tag) {
-  viewer.entities.add({
-    position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
-    billboard: {
-      image: tag.billboard,
-      scale: 0.05,
-      color: Cesium.Color.WHITE,
-      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-    },
-  });
-}
-
+// function addBillBoard(tag) {
+//   viewer.entities.add({
+//     position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
+//     billboard: {
+//       image: tag.billboard,
+//       scale: 0.05,
+//       color: Cesium.Color.WHITE,
+//       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+//       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+//     },
+//   });
+// }
 /* Forbidden Forbidden Forbidden Forbidden Forbidden */

@@ -70,7 +70,7 @@ const currentSection = computed({
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			color: rgb(var(--GRAY5));
+			color: rgb(var(--GRAY2));
 			cursor: pointer;
 
 			// 有底圖
@@ -80,7 +80,7 @@ const currentSection = computed({
 			// background-position: bottom;
 
 			// 沒有底圖
-			background-color: rgb(var(--B8));
+			background-color: rgb(var(--B9));
 
 			p {
 				margin: 3px 0 0 0.5em;
@@ -89,7 +89,7 @@ const currentSection = computed({
 
 		.currentSection {
 			color: rgb(var(--WHITE));
-			background-color: rgb(var(--BLUE));
+			background-color: rgb(var(--B6));
 			// background-image: url("../assets/image/page_BTN_ON.png");
 		}
 

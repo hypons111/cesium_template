@@ -24,14 +24,14 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
 import "@/assets/css/chart.css"
 import "@/assets/css/svg.css"
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
-  title: "Doughnut Chart L",
+  title: "Doughnut Chart M",
   xData: ['A', 'B', 'C', 'D', 'E'],
   series: [
     {
@@ -76,10 +76,6 @@ const fakeChartData = ref({
 }
 );
 
-onMounted(() => {
-  setChart();
-})
-
 function setChart() {
   const chart = echarts.init(chartContainer.value);
   chart.setOption({
@@ -117,7 +113,9 @@ function setChart() {
   });
 }
 
-
+onMounted(() => {
+  setChart();
+})
 
 </script>
 

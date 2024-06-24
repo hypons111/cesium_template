@@ -34,7 +34,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import 'element-plus/dist/index.css';
-import { addTag, removeTagEntity } from '@/assets/javascript/cesiumUtils';
+import { addTag, removeTagEntity, flyCamera } from '@/assets/javascript/cesiumUtils';
 import axios from "axios";
 
 /* 列表名稱 */
@@ -58,6 +58,7 @@ function renderTree(h, { node, data }) {
     h(
       'span',
       { class: 'custom-tree-row' },
+      h('a', { id: data.id, class: `zoom zoom_${data.billboard}`, onClick: () => onClickZoom(data) }, ""),
       h('a', { id: data.id, class: `eye${data.status}`, onClick: () => onClickEye(data, node) }, ""),
       h('a', { class: 'plus', onClick: () => append(data) }, '+'), // 增加節點
       h('a', { class: 'minus', onClick: () => remove(node, data) }, '-')  // 移除節點
@@ -73,7 +74,7 @@ function switchTree(tree) {
   }
   TreeTitle.value = treeTypes[tree];
   axios
-    .get(`/json/fake_${tree}.json`)
+    .get(`./json/fake_${tree}.json`)
     .then(response => {
       const data = response.data.data;
       tagData.value = data;
@@ -97,6 +98,18 @@ function addTagHandler(data) {
       }
     }
   })
+}
+
+function onClickZoom(nodeData) {
+  const cameraData = {
+    x: nodeData.x,
+    y: nodeData.y,
+    z: 300,
+    h: 0,
+    p: -1.5,
+    r: 0,
+  }
+  flyCamera(cameraData);
 }
 
 // 點擊眼睛 icon
@@ -125,11 +138,12 @@ async function onClickEye(nodeData, node) {
       const parentNode = node.parent;
       let counter = 0;
       parentNode.childNodes.forEach(children => {
-        if(children.status === 2) {
+        if (children.status === 2) {
           counter += 1;
-        } else if (children.status === 1){
-          counter -= 1;
         }
+        // else if (children.status === 1){
+        //   counter -= 1;
+        // }
       })
       switch (counter) {
         case parentNode.childNodes.length:
@@ -234,11 +248,28 @@ function remove(node, data) {
     }
 
     .custom-tree-row {
-      width: 3em;
+      flex-grow: 1;
       height: 100%;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
+      color: rgb(var(--CYAN));
       /* border: 1px solid lime; */
+
+      &>* {
+        margin-left: 0.5em;
+      }
+
+      .zoom {
+        width: 1em;
+        height: 100%;
+        background-image: url("@/assets/image/magnifying-glass-solid.svg");
+        background-repeat: no-repeat;
+        background-position: center 60%;
+      }
+
+      .zoom_undefined {
+        display: none;
+      }
 
       .eye0 {
         width: 1em;

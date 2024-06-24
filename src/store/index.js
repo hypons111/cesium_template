@@ -4,7 +4,7 @@ const defaultModel = "ALL";
 
 export default createStore({
   state: {
-    CURRENT_SECTION: "section4",
+    CURRENT_SECTION: "section1",
     ALL_MODEL: "ALL",
     CURRENT_MODEL: defaultModel,
     CURRENT_MAIN_COMPONENT: "section1",

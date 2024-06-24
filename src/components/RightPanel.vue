@@ -1,16 +1,16 @@
 <template>
   <div id="RightPanel" class="panel">
-    <DoughnutChart_M v-if="currentSection === 'section3'"/>
-    <StackedLineChart v-if="currentSection === 'section3'"/>
-    <Tree v-if="currentSection === 'section4'"/>
+    <Information_S v-if="currentSection === 'section1'"/>
+    <TemperatureLineChart_S v-if="currentSection === 'section1'"/>
+    <Tree v-if="currentSection === 'section3'"/>
   </div>
 </template>
 
 <script setup>
 import { computed } from "vue"
 import { useStore } from "vuex"
-import DoughnutChart_M from "@/components/parts/DoughnutChart_M.vue"
-import StackedLineChart from "@/components/parts/StackedLineChart_S.vue"
+import Information_S from "@/components/parts/Information_S.vue"
+import TemperatureLineChart_S from "@/components/parts/TemperatureLineChart_S.vue"
 import Tree from "@/components/parts/Tree.vue"
 
 const store = useStore();

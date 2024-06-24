@@ -31,8 +31,8 @@ import "@/assets/css/svg.css"
 
 const chartContainer = ref(null);
 const fakeChartData = ref({
-  title: "Doughnut Chart S",
-  xData: ['A', 'B', 'C', 'D', 'E'],
+  title: "照明設備",
+  xData: ['故障', '上線', '離線'],
   series: [
     {
       type: 'pie',
@@ -40,24 +40,16 @@ const fakeChartData = ref({
       radius: ['20%', '75%'],
       data: [
         {
-          name: 'A',
+          name: '故障',
           value: 120,
         },
         {
-          name: 'B',
+          name: '上線',
           value: 220
         },
         {
-          name: 'C',
+          name: '離線',
           value: 150
-        },
-        {
-          name: 'D',
-          value: 320
-        },
-        {
-          name: 'E',
-          value: 820
         }
       ],
       /* pie 旁邊的文字 */
@@ -119,4 +111,6 @@ onMounted(() => {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+#DoughnutChart {}
+</style>

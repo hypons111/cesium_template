@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import * as echarts from 'echarts';
 import "@/assets/css/chart.css"
 import "@/assets/css/svg.css"
