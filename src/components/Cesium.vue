@@ -2,7 +2,11 @@
   <!-- 左上角 dropdown menu -->
   <div id="leftAside" class="aside">
     <el-select class="el_select" v-model="value" :placeholder="placeholder" @change="switchModel(this)">
-      <el-option v-for="item in leftAsideOptions" :key="item.label" :label="item.label" :value="item.label"
+      <el-option v-for="item in leftAsideOptions" 
+        :key="item.label" 
+        :value="item.label" 
+        :label="item.label"
+        :set="item.set" 
         class="el_option">
       </el-option>
     </el-select>
@@ -12,6 +16,7 @@
   <div id="rightAside" class="aside">
     <button @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</button>
     <button @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</button>
+    <button @click="test">初始化模型</button>
   </div>
 
   <!-- cesium -->
@@ -20,13 +25,13 @@
   </div>
 
   <!-- 點位 popup modal -->
-  <div id="modalContainer" v-if="MODAL_STATUS.IS_SHOW">
+  <div id="modalContainer" v-if="modalStatus.IS_SHOW">
     <Modal />
   </div>
 
   <!-- 滑鼠右鍵 panel -->
-  <div id="CesiumMenuContainer" @contextmenu.prevent
-    :style="{ top: cesiumMenuData.y + 'px', left: cesiumMenuData.x + 'px' }" v-if="cesiumMenuData.show">
+  <div id="menuContainer" @contextmenu.prevent :style="{ top: cesiumMenuData.y + 'px', left: cesiumMenuData.x + 'px' }"
+    v-if="cesiumMenuData.show">
     <div id="CesiumMenu" class="">
       <ul>
         <li @click="resetCamera"><button>重設視點</button></li>
@@ -47,10 +52,12 @@ import { cesiumMenuData, initialCesium, patrolHandler, resetCamera, addRectangle
 import { settings } from "@/assets/javascript/cesiumSettings"
 
 const store = useStore();
-const placeholder = computed(() => store.getters.CURRENT_MODEL);
+const placeholder = "請選擇"; //computed(() => store.getters.CURRENT_MODEL);
 const allModel = store.getters.ALL_MODEL;
 const leftAsideOptions = ref([]);
-const MODAL_STATUS = computed(() => store.getters.MODAL_STATUS);
+const modalStatus = computed(() => store.getters.MODAL_STATUS);
+const currentModelSet = computed(() => store.getters.CURRENT_MODEL_SET);
+const modalArray = settings.model.ModalArray;
 
 onMounted(async () => {
   await initialCesium();
@@ -59,22 +66,37 @@ onMounted(async () => {
 
 function fetchModelList() {
   leftAsideOptions.value.push({ label: allModel });
-  settings.model.ModalArray.forEach(({ label, fileName }) => {
+  modalArray[currentModelSet.value].forEach(({ label, file, set }) => {
     leftAsideOptions.value.push({
       label: label,
-      fileName: fileName
+      file: file,
+      set: set
     })
   })
 }
 
 function switchModel(t) {
+  const breadCrumb = store.getters.MODEL_BREADCRUMB;
   if (t.value === allModel) {
     store.commit("SET_CURRENT_MODEL", allModel);
   } else {
-    const currentModel = settings.model.ModalArray.filter(({ label }) => label === t.value)[0];
-    store.commit("SET_CURRENT_MODEL", currentModel.label);
+    breadCrumb.forEach(prop => {
+      if(modalArray.hasOwnProperty(prop)) {
+        const currentModel = settings.model.ModalArray.filter(({ label }) => label === t.value)[0];
+        store.commit("SET_CURRENT_MODEL", currentModel.label);
+      } else {
+        console.log(prop);
+      }
+    })
   }
 }
+
+function test() {
+  store.commit("SET_HEADER_TITLE", "TEMPLATE");
+  store.commit("SET_CURRENT_MODEL_SET", "initial");
+  store.commit("SET_CURRENT_MODEL", "initial");
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -84,20 +106,13 @@ function switchModel(t) {
 }
 
 // ceiusm view
-:deep#viewerContainer {
+::v-deep#viewerContainer {
   height: 100%;
 
   * {
     width: 100%;
     height: 100%;
   }
-}
-
-#modalContainer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 .aside {
@@ -145,17 +160,7 @@ function switchModel(t) {
   }
 }
 
-@keyframes showMenu {
-  0% {
-    height: 0;
-  }
-
-  100% {
-    height: 20em;
-  }
-}
-
-#CesiumMenuContainer {
+#menuContainer {
   position: absolute;
   width: 15em;
   height: 0;
@@ -167,5 +172,32 @@ function switchModel(t) {
   animation-name: showMenu;
   animation-duration: 0.25s;
   animation-fill-mode: forwards;
+}
+
+@keyframes showMenu {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: 20em;
+  }
+}
+
+#modalContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+
+<style>
+div.el-popper {
+  width: 25rem !important;
+}
+
+.el-select-dropdown__item {
+  width: calc(25rem - 2px);
 }
 </style>

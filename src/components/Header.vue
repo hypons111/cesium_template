@@ -16,16 +16,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex"
 import Clock from "@/components/parts/Clock.vue";
 import Marquee from "@/components/parts/Marquee.vue";
-import { patrolHandler, resetCamera } from '@/assets/javascript/cesiumUtils';
-import { settings } from "@/assets/javascript/cesiumSettings"
 
 const store = useStore();
-
-const projectName = ref(process.env.VUE_APP_PROJECT_NAME);
+const projectName = computed(() => store.getters.HEADER_TITLE);
 </script>
 
 <style lang="scss" scoped>

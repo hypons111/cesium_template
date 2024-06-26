@@ -3,13 +3,16 @@ import * as Cesium from "cesium";
 import axios from "axios";
 import { settings, hidePanel, hideSpace, hideEarth } from "./cesiumSettings";
 import store from "@/store/index"; // js 模塊要用這方法讀入 store
-import BLUE_TAG from "@/assets/image/blue.png"; // 載入 billboard icon
-import BROWN_TAG from "@/assets/image/brown.png"; // 載入 billboard icon
+import GREEN_TAG from "@/assets/image/label_light1.png"; // 載入 billboard icon
+import RED_TAG from "@/assets/image/label_light2.png"; // 載入 billboard icon
+import SUCCESS_TAG from "@/assets/image/typeSuccessful.png"; // 載入 billboard icon
+import WARNNING_TAG from "@/assets/image/typeWarnning.png"; // 載入 billboard icon
 
 const allModel = store.getters.ALL_MODEL;
 const currentModel = computed(() => store.getters.CURRENT_MODEL); // 正在顯示的模型
+const currentModelSet = computed(() => store.getters.CURRENT_MODEL_SET); // 正在顯示的模型
 const entityArray = []; // 全部模型的 entity
-const tagEntity  = []; // 全部 label 和 billboard 的 entity
+const tagEntity = []; // 全部 label 和 billboard 的 entity
 /* 滑鼠右鍵跳出的 panel 位置 */
 export const cesiumMenuData = ref({
   show: false,
@@ -38,10 +41,9 @@ async function setViewer(container) {
       : { ...hidePanel, ...hideSpace, ...hideEarth }; // 加入需要的 viewer 設定
   const viewer = new Cesium.Viewer(container, viewerConfig); // 套用 viewer 設定
   viewer.scene.backgroundColor = Cesium.Color[settings.viewer.backgroundColor]; // 移除太空底圖後的背景顏色
-  viewer.scene.screenSpaceCameraController.maximumZoomDistance =
-    settings.viewer.maximumZoomDistance || 10000000; // 限制視點的最遠距離
-  viewer.scene.screenSpaceCameraController.minimumZoomDistance =
-    settings.viewer.minimumZoomDistance || 0; // 限制視點的最近距離
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance = settings.viewer.maximumZoomDistance || 10000000; // 限制視點的最遠距離
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = settings.viewer.minimumZoomDistance || 0; // 限制視點的最近距離
+  viewer.scene.globe.depthTestAgainstTerrain = true; // 啟用地形對深度測試
   // viewer.scene.mode = Cesium.SceneMode.COLUMBUS_VIEW; // 使用 2.5D 模式
 
   /* 使用 google 地圖時, 關閉 bing 地圖, 可加快載入 */
@@ -58,72 +60,89 @@ async function setViewer(container) {
 async function addGLTF() {
   const camera = settings.camera;
   const model = settings.model;
+  const set = currentModelSet.value;
   let entity = undefined;
 
-  // try {
-  const modelSetting = model.ModalArray;
-  let MODEL_URI = undefined;
+  /* 董事長的球體 */
+  // viewer.entities.add({
+  //   position: Cesium.Cartesian3.fromDegrees(121.5372, 25.29257, 0),
+  //   ellipsoid: {
+  //     radii: new Cesium.Cartesian3(450, 450, 450),
+  //     outline: true,
+  //     outlineColor: Cesium.Color.WHITE,
+  //     outlineWidth: 2,
+  //     material: Cesium.Color.fromRandom({ alpha: 0.5 }),
+  //   },
+  // });
 
-  for (let i = 0; i < model.ModalArray.length; i++) {
-    if (
-      currentModel.value === allModel ||
-      currentModel.value === model.ModalArray[i].label
-    ) {
-      /* 切換模型 */
-      if (model.modelType === "local") {
-        MODEL_URI = `./gltf/${model.ModalArray[i].fileName}.gltf`; // local model
-      } else if (model.modelType === "ion") {
-        MODEL_URI = await Cesium.IonResource.fromAssetId(
-          model.ModalArray[i].fileName
-        ); // ion model
+  try {
+    const modelSetting = model.ModalArray[set];
+    let MODEL_URI = undefined;
+    for (let i = 0; i < model.ModalArray[set].length; i++) {
+      if (
+        currentModel.value === "initial" ||
+        currentModel.value === "" ||
+        currentModel.value === allModel ||
+        currentModel.value === model.ModalArray[set][i].label
+      ) {
+        /* 切換模型 */
+        if (model.modelType === "local") {
+          MODEL_URI = `./gltf/${model.ModalArray[set][i].file}.gltf`; // local model
+        } else if (model.modelType === "ion") {
+          MODEL_URI = await Cesium.IonResource.fromAssetId(
+            model.ModalArray[set][i].file
+          ); // ion model
+        }
       }
+      const position = Cesium.Cartesian3.fromDegrees(
+        modelSetting[i].x,
+        modelSetting[i].y,
+        modelSetting[i].z
+      );
+      const heading = Cesium.Math.toRadians(modelSetting[i].h);
+      const pitch = Cesium.Math.toRadians(modelSetting[i].p);
+      const roll = Cesium.Math.toRadians(modelSetting[i].r);
+      const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+        position,
+        new Cesium.HeadingPitchRoll(heading, pitch, roll)
+      );
+      entity = viewer.entities.add({
+        position: position, // 模型位置
+        orientation: orientation, // 模型角度
+        KIN_label: model.ModalArray[set][i].label,
+        KIN_file: model.ModalArray[set][i].file,
+        KIN_set: model.ModalArray[set][i].set,
+        model: {
+          uri: MODEL_URI, // 模型路徑
+          scale: modelSetting[i].s, // 模型大小
+        },
+      });
+      entityArray.push(entity);
     }
-    const position = Cesium.Cartesian3.fromDegrees(
-      modelSetting[i].x,
-      modelSetting[i].y,
-      modelSetting[i].z
-    );
-    const heading = Cesium.Math.toRadians(modelSetting[i].h);
-    const pitch = Cesium.Math.toRadians(modelSetting[i].p);
-    const roll = Cesium.Math.toRadians(modelSetting[i].r);
-    const orientation = Cesium.Transforms.headingPitchRollQuaternion(
-      position,
-      new Cesium.HeadingPitchRoll(heading, pitch, roll)
-    );
-    entity = viewer.entities.add({
-      position: position, // 模型位置
-      orientation: orientation, // 模型角度
-      model: {
-        uri: MODEL_URI, // 模型路徑
-        scale: modelSetting[i].s, // 模型大小
-      },
-    });
-    entityArray.push(entity);
-  }
 
-  /* 鏡頭使用 模型/座標 */
-  /* 請在 cesiumConfig.js 設定 */
-  if (camera.zoomTo === "model") {
-    viewer.trackedEntity = entity;
-  } else if (camera.zoomTo === "coordinate") {
-    const destination = Cesium.Cartesian3.fromDegrees(
-      camera.x,
-      camera.y,
-      camera.z
-    ); // zoom 的位置, 可以是 model / Cartesian座標
-    const orientation = new Cesium.HeadingPitchRange(
-      camera.h,
-      camera.p,
-      camera.r
-    );
-    viewer.camera[camera.zoomType]({
-      destination: destination,
-      orientation: orientation,
-    });
+    /* 鏡頭使用 模型/座標 */
+    /* 請在 cesiumConfig.js 設定 */
+    if (camera.zoomTo === "model") {
+      viewer.trackedEntity = entity;
+    } else if (camera.zoomTo === "coordinate") {
+      const destination = Cesium.Cartesian3.fromDegrees(
+        camera.x,
+        camera.y,
+        camera.z
+      ); // zoom 的位置, 可以是 model / Cartesian座標
+      const orientation = new Cesium.HeadingPitchRange(
+        camera.h,
+        camera.p,
+        camera.r
+      );
+      viewer.camera[camera.zoomType]({
+        destination: destination,
+        orientation: orientation,
+      });
+    }
+  } catch (error) {
+    console.log(`[addGLTF() ERROR] : ${error}`);
   }
-  // } catch (error) {
-  //   console.log(`[addGLTF() ERROR] : ${error}`);
-  // }
 }
 
 /* 滑鼠事件 */
@@ -141,6 +160,15 @@ function setMouseEventListener() {
         if (feature) {
           switch (feature.primitive.constructor.name) {
             case "Model":
+              const primitive = feature.primitive;
+              store.commit("SET_HEADER_TITLE", primitive._id._KIN_label);
+              if (primitive._id._KIN_set) {
+                store.commit("SET_CURRENT_MODEL_SET", primitive._id._KIN_set);
+                store.commit("SET_CURRENT_MODEL", "");
+                store.commit("PUSH_MODEL_BREADCRUMB", primitive._id._KIN_set);
+              } else {
+                store.commit("SET_CURRENT_MODEL", primitive._id._KIN_file);
+              }
               break;
             case "Label":
             case "Billboard":
@@ -169,7 +197,7 @@ function setMouseEventListener() {
             y: y,
             longitude: longitude,
             latitude: latitude,
-            height: height
+            height: height,
           };
           nextTick(() => {
             cesiumMenuData.value.show = true;
@@ -185,20 +213,28 @@ function setMouseEventListener() {
           const feature = viewer.scene.pick(movement.endPosition);
           if (feature && feature.primitive.constructor.name === "Model") {
             entityArray.forEach((entity) => {
-              entity.model.color = Cesium.Color.fromCssColorString("rgba(250, 250, 250, 0.25)");
-             });
-             feature.id.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
-             featureHoverStatus = true;
+              entity.model.color = Cesium.Color.fromCssColorString(
+                "rgba(250, 250, 250, 0.25)"
+              );
+            });
+            feature.id.model.color = Cesium.Color.fromCssColorString(
+              "rgba(255, 255, 255, 1)"
+            );
+            featureHoverStatus = true;
           } else if (featureHoverStatus !== undefined) {
             featureHoverStatus = undefined;
             entityArray.forEach((entity) => {
-              entity.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
+              entity.model.color = Cesium.Color.fromCssColorString(
+                "rgba(255, 255, 255, 1)"
+              );
             });
           }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
       } else {
         entityArray.forEach((entity) => {
-          entity.model.color = Cesium.Color.fromCssColorString("rgba(255, 255, 255, 1)");
+          entity.model.color = Cesium.Color.fromCssColorString(
+            "rgba(255, 255, 255, 1)"
+          );
         });
       }
       resolve(true);
@@ -228,21 +264,23 @@ function fetchTagsAndHandle() {
 export function addTag(tag) {
   /* 用來選擇已載入的 billboard icon */
   const billBoardIcons = {
-    BLUE_TAG: BLUE_TAG,
-    BROWN_TAG: BROWN_TAG,
+    GREEN_TAG: GREEN_TAG,
+    RED_TAG: RED_TAG,
+    SUCCESS_TAG: SUCCESS_TAG,
+    WARNNING_TAG: WARNNING_TAG,
   };
   const entity = viewer.entities.add({
     position: Cesium.Cartesian3.fromDegrees(tag.x, tag.y, tag.z), // 實際與地面距離
     label: {
       text: tag.label,
-      font: `${tag.s*20}em Helvetica`,
+      font: `${tag.s * 2.5}em Helvetica`,
       fillColor: Cesium.Color.WHITE,
       outlineColor: Cesium.Color.BLACK,
-      outlineWidth: 2,
+      outlineWidth: 3.5,
       style: Cesium.LabelStyle.FILL_AND_OUTLINE,
       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
       verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-      pixelOffset: new Cesium.Cartesian2(0, (0-tag.s*1000)), // 與 billborad 距離
+      pixelOffset: new Cesium.Cartesian2(0, 0 - tag.s * 170), // 與 billborad 距離
     },
     billboard: {
       image: billBoardIcons[tag.billboard],
@@ -258,9 +296,9 @@ export function addTag(tag) {
 
 /* 移除 tag (label + billBoard) */
 export function removeTagEntity() {
-  tagEntity.forEach(tag => {
+  tagEntity.forEach((tag) => {
     viewer.entities.remove(tag);
-  })
+  });
   tagEntity.length = 0;
 }
 
@@ -307,7 +345,11 @@ export async function patrolHandler() {
     patrol.y,
     patrol.z
   );
-  const orientation = new Cesium.HeadingPitchRange(patrol.h, patrol.p, patrol.r);
+  const orientation = new Cesium.HeadingPitchRange(
+    patrol.h,
+    patrol.p,
+    patrol.r
+  );
 
   viewer.camera.setView({
     destination: destination,

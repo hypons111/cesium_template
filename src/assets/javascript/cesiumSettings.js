@@ -2,117 +2,123 @@ const settings = {
   viewer: {
     ionDefaultAccessToken:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNmNjZDdjOS05ZmFhLTQ3NTItOTI5OS00NDMzN2Y0MzQwMTIiLCJpZCI6MjIxNjQ5LCJpYXQiOjE3MTgxNjIxMTV9.8N1NuOLwQDadOEF4X0m2z9SiTCR0e5OFYWUNV5WWU1U",
-    showEarth: false,
+    showEarth: true,
     backgroundColor: "BLACK",
     useGoogleMap: false,
     maximumZoomDistance: 10000000,
-    minimumZoomDistance: 10,
+    minimumZoomDistance: 10
   },
-
+  
   model: {
-    modelType: "ion",
-    ModalArray: [
-      {
-        label: "1F",
-        fileName: "2618078",
-        x: 121.5997116931,
-        y: 25.0561982235,
-        z: 0,
-        h: 61,
-        p: 0,
-        r: 0,
-        s: 3,
-      },
-      // {
-      //   label: "1M",
-      //   fileName: "2618079",
-      //   x: 121.5997116931,
-      //   y: 25.0561982235,
-      //   z: 0,
-      //   h: 61,
-      //   p: 0,
-      //   r: 0,
-      //   s: 3,
-      // },
-      // {
-      //   label: "2F",
-      //   fileName: "2618080",
-      //   x: 121.5997116931,
-      //   y: 25.0561982235,
-      //   z: 0,
-      //   h: 61,
-      //   p: 0,
-      //   r: 0,
-      //   s: 3,
-      // },
-      // {
-      //   label: "3F",
-      //   fileName: "2618081",
-      //   x: 121.5997116931,
-      //   y: 25.0561982235,
-      //   z: 0,
-      //   h: 61,
-      //   p: 0,
-      //   r: 0,
-      //   s: 3,
-      // },
-      // {
-      //   label: "4F",
-      //   fileName: "2618082",
-      //   x: 121.5997116931,
-      //   y: 25.0561982235,
-      //   z: 0,
-      //   h: 61,
-      //   p: 0,
-      //   r: 0,
-      //   s: 3,
-      // },
-      // {
-      //   label: "RF",
-      //   fileName: "2618083",
-      //   x: 121.5997116931,
-      //   y: 25.0561982235,
-      //   z: 0,
-      //   h: 61,
-      //   p: 0,
-      //   r: 0,
-      //   s: 3,
-      // },
-      // {
-      //   label: "B1",
-      //   fileName: "2618084",
-      //   x: 121.5997116931,
-      //   y: 25.0561982235,
-      //   z: 0,
-      //   h: 61,
-      //   p: 0,
-      //   r: 0,
-      //   s: 3,
-      // },
-      // {
-      //   label: "B2",
-      //   fileName: "2618085",
-      //   x: 121.5997116931,
-      //   y: 25.0561982235,
-      //   z: 0,
-      //   h: 61,
-      //   p: 0,
-      //   r: 0,
-      //   s: 3,
-      // }
-    ],
+    modelType: "local",
+    ModalArray: {
+      initial: [
+        {
+          label: "碼頭",
+          file: "harbour",
+          set: "harbour",
+          x: 121.5372,
+          y: 25.29257,
+          z: 0,
+          h: 90,
+          p: 0,
+          r: 0,
+          s: 10.25
+        },
+        {
+          label: "大廈",
+          file: "building",
+          set: "building",
+          x: 121.533,
+          y: 25.2938,
+          z: 0,
+          h: 27,
+          p: 0,
+          r: 0,
+          s: 3
+        }
+      ],
+      building: [
+        {
+          label: "1F",
+          file: "1F",
+          x: 121.533,
+          y: 25.2938,
+          z: 0,
+          h: 27,
+          p: 0,
+          r: 0,
+          s: 3
+        },
+        {
+          label: "1MF",
+          file: "1MF",
+          x: 121.533,
+          y: 25.2938,
+          z: 0,
+          h: 27,
+          p: 0,
+          r: 0,
+          s: 3
+        },
+        {
+          label: "2F",
+          file: "2F",
+          x: 121.533,
+          y: 25.2938,
+          z: 0,
+          h: 27,
+          p: 0,
+          r: 0,
+          s: 3
+        },
+        {
+          label: "3F",
+          file: "3F",
+          x: 121.533,
+          y: 25.2938,
+          z: 0,
+          h: 27,
+          p: 0,
+          r: 0,
+          s: 3
+        },
+        {
+          label: "4F",
+          file: "4F",
+          x: 121.533,
+          y: 25.2938,
+          z: 0,
+          h: 27,
+          p: 0,
+          r: 0,
+          s: 3
+        },
+        {
+          label: "RF",
+          file: "RF",
+          x: 121.533,
+          y: 25.2938,
+          z: 0,
+          h: 27,
+          p: 0,
+          r: 0,
+          s: 3
+        },
+      ]
+    },
   },
 
   camera: {
     zoomType: "setView",
     zoomTo: "coordinate",
-    x: 121.5997,
-    y: 25.0537,
-    z: 100,
+    x: 121.5342,
+    y: 25.287,
+    z: 600,
     h: 0,
-    p: -0.25,
+    p: -0.75,
     r: 0,
-    flyDuration: 2,
+    flyDuration: 2, 
     /* Forbidden */
     // setOffset: 100, // set 專用 offset 鏡頭 offset 距離
     // flyOffset: [0, 0, 0], // fly 專用 offset 鏡頭 offset 距離
@@ -120,12 +126,11 @@ const settings = {
 
   patrol: {
     /* 巡邏起點座標 */
-
-    x: 121.59,
-    y: 25.056,
-    z: 2,
-    h: 1.55,
-    p: 0,
+    x: 121.5342,
+    y: 25.28835,
+    z: 700,
+    h: 0,
+    p: -1,
     r: 0,
 
     /* 巡邏點 */
@@ -158,8 +163,8 @@ const settings = {
     ],
     circleArray: [
       {
-        x: 121.5997116931,
-        y: 25.0561982235,
+        x: 121.5342,
+        y: 25.28835,
         z: 50,
         length1: 100,
         length2: 100,
@@ -167,8 +172,8 @@ const settings = {
         color: "RED",
       },
       {
-        x: 121.5997116931,
-        y: 25.0561982235,
+        x: 121.5342,
+        y: 25.28835,
         z: 100,
         length1: 100,
         length2: 100,
