@@ -2,12 +2,8 @@
   <!-- 左上角 dropdown menu -->
   <div id="leftAside" class="aside">
     <el-select class="el_select" v-model="value" :placeholder="placeholder" @change="switchModel(this)">
-      <el-option v-for="item in leftAsideOptions" 
-        :key="item.label" 
-        :value="item.label" 
-        :label="item.label"
-        :set="item.set" 
-        class="el_option">
+      <el-option v-for="item in leftAsideOptions" :key="item.label" :value="item.label" :label="item.label"
+        :set="item.set" class="el_option">
       </el-option>
     </el-select>
   </div>
@@ -16,7 +12,7 @@
   <div id="rightAside" class="aside">
     <button @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</button>
     <button @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</button>
-    <button @click="test">初始化模型</button>
+    <button @click="initialModel">初始化模型</button>
   </div>
 
   <!-- cesium -->
@@ -48,7 +44,16 @@
 import Modal from "@/components/Modal.vue"
 import { ref, onMounted, computed } from "vue";
 import { useStore } from "vuex"
-import { cesiumMenuData, initialCesium, patrolHandler, resetCamera, addRectangleEntity, addCircleEntity } from '@/assets/javascript/cesiumUtils';
+import {
+  cesiumMenuData,
+  initialCesium,
+  patrolHandler,
+  resetCamera,
+  addRectangleEntity_EXAMPLE,
+  addCircleEntity_EXAMPLE,
+  addEllipsoidEntity_EXAMPLE,
+  addPolylineEntity_EXAMPLE
+} from '@/assets/javascript/cesiumUtils';
 import { settings } from "@/assets/javascript/cesiumSettings"
 
 const store = useStore();
@@ -62,6 +67,10 @@ const modalArray = settings.model.ModalArray;
 onMounted(async () => {
   await initialCesium();
   await fetchModelList();
+  await addRectangleEntity_EXAMPLE();
+  await addCircleEntity_EXAMPLE();
+  await addEllipsoidEntity_EXAMPLE();
+  await addPolylineEntity_EXAMPLE();
 });
 
 function fetchModelList() {
@@ -81,7 +90,7 @@ function switchModel(t) {
     store.commit("SET_CURRENT_MODEL", allModel);
   } else {
     breadCrumb.forEach(prop => {
-      if(modalArray.hasOwnProperty(prop)) {
+      if (modalArray.hasOwnProperty(prop)) {
         const currentModel = settings.model.ModalArray.filter(({ label }) => label === t.value)[0];
         store.commit("SET_CURRENT_MODEL", currentModel.label);
       } else {
@@ -91,7 +100,7 @@ function switchModel(t) {
   }
 }
 
-function test() {
+function initialModel() {
   store.commit("SET_HEADER_TITLE", "TEMPLATE");
   store.commit("SET_CURRENT_MODEL_SET", "initial");
   store.commit("SET_CURRENT_MODEL", "initial");

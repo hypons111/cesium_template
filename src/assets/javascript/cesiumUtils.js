@@ -28,7 +28,6 @@ let featureHoverStatus = undefined;
 export async function initialCesium() {
   window.viewer = await setViewer("viewerContainer"); // 建立 viewer
   await addGLTF(); // 加載模型
-  // await fetchTagsAndHandle(); // 加載 label 和 billboard
   await setMouseEventListener(); // 設定 event listener
 }
 
@@ -62,18 +61,6 @@ async function addGLTF() {
   const model = settings.model;
   const set = currentModelSet.value;
   let entity = undefined;
-
-  /* 董事長的球體 */
-  // viewer.entities.add({
-  //   position: Cesium.Cartesian3.fromDegrees(121.5372, 25.29257, 0),
-  //   ellipsoid: {
-  //     radii: new Cesium.Cartesian3(450, 450, 450),
-  //     outline: true,
-  //     outlineColor: Cesium.Color.WHITE,
-  //     outlineWidth: 2,
-  //     material: Cesium.Color.fromRandom({ alpha: 0.5 }),
-  //   },
-  // });
 
   try {
     const modelSetting = model.ModalArray[set];
@@ -244,7 +231,7 @@ function setMouseEventListener() {
   });
 }
 
-/* 取得 tag (label + billBoard) 資料並呼叫 addTag() */
+/* 取得 tag (label + billBoard) 資料並呼叫 addTagEntity() */
 function fetchTagsAndHandle() {
   /* label 是文字 */
   /* billboard 是圖片，圖片要先用 `import from` 導入 */
@@ -252,7 +239,7 @@ function fetchTagsAndHandle() {
     .get("./json/fake_tags.json")
     .then((response) => {
       response.data.tags.forEach((tag) => {
-        addTag(tag);
+        addTagEntity(tag);
       });
     })
     .catch((error) => {
@@ -261,7 +248,7 @@ function fetchTagsAndHandle() {
 }
 
 /* 放置 tag (label + billBoard) */
-export function addTag(tag) {
+export function addTagEntity(tag) {
   /* 用來選擇已載入的 billboard icon */
   const billBoardIcons = {
     GREEN_TAG: GREEN_TAG,
@@ -302,8 +289,8 @@ export function removeTagEntity() {
   tagEntity.length = 0;
 }
 
-/* 加入矩形 */
-export async function addRectangleEntity() {
+/* 加入 rectangle 範例 */
+export async function addRectangleEntity_EXAMPLE() {
   const rectangleArray = settings.entity.rectangleArray;
   rectangleArray.forEach((rectangle) => {
     viewer.entities.add({
@@ -320,8 +307,8 @@ export async function addRectangleEntity() {
   });
 }
 
-/* 加入圓形 */
-export async function addCircleEntity() {
+/* 加入 ellipse 範例 */
+export async function addCircleEntity_EXAMPLE() {
   const circleArray = settings.entity.circleArray;
   circleArray.forEach((circle) => {
     viewer.entities.add({
@@ -333,6 +320,42 @@ export async function addCircleEntity() {
         material: Cesium.Color[circle.color].withAlpha(circle.opacity),
       },
     });
+  });
+}
+
+/* 加入 ellipsoid 範例 */
+export async function addEllipsoidEntity_EXAMPLE() {
+  viewer.entities.add({
+    position: Cesium.Cartesian3.fromDegrees(121.53952734804245, 25.29196755746243, 0),
+    ellipsoid: {
+      radii: new Cesium.Cartesian3(100, 100, 100),
+      outline: true,
+      outlineColor: Cesium.Color.WHITE,
+      outlineWidth: 2,
+      material: Cesium.Color.CYAN.withAlpha(0.5)
+    },
+  });
+}
+
+/* 加入 polyline 範例 */
+export async function addPolylineEntity_EXAMPLE() {
+  viewer.entities.add({
+    polyline: {
+      positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+        121.53717761035917, 25.291781575982238, 1,
+        121.53770712680753, 25.291655224909384, 1,
+        121.53814538257055, 25.291702954220774, 1,
+        121.53835982084358, 25.291771321351963, 1,
+        121.53882423046551, 25.29126262675215, 1,
+        121.53826994283008, 25.290791703013543, 1,
+        121.53834495771378, 25.29034749139047, 1,
+        121.53829898206095, 25.290216747626886, 1,
+        121.5376189090744, 25.290283896320435, 1,
+        121.53717761035917, 25.291781575982238, 1
+      ]),
+      width: 5,
+      material: Cesium.Color.RED,
+    },
   });
 }
 
@@ -458,10 +481,12 @@ export default {
   resetCamera,
   setCamera,
   flyCamera,
-  addTag,
-  addRectangleEntity,
-  addCircleEntity,
-  removeTagEntity,
+  addTagEntity,
+  addRectangleEntity_EXAMPLE,
+  addCircleEntity_EXAMPLE,
+  addEllipsoidEntity_EXAMPLE,
+  addPolylineEntity_EXAMPLE,
+  removeTagEntity
 };
 
 /* Forbidden Forbidden Forbidden Forbidden Forbidden */

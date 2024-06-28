@@ -34,7 +34,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import 'element-plus/dist/index.css';
-import { addTag, removeTagEntity, flyCamera } from '@/assets/javascript/cesiumUtils';
+import { addTagEntity, removeTagEntity, flyCamera } from '@/assets/javascript/cesiumUtils';
 import axios from "axios";
 
 /* 列表名稱 */
@@ -91,7 +91,7 @@ function addTagHandler(data) {
   data.forEach(tag => {
     if (tag.status !== 0) {
       if (tag.billboard) {
-        addTag(tag);
+        addTagEntity(tag);
       }
       if (tag.children) {
         addTagHandler(tag.children)
