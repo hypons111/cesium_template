@@ -2,7 +2,7 @@
     <div id="login">
         <div id="loginContainer">
             <p>帳號</p><input type="text" v-model="user" placeholder="" autocomplete="off" />
-            <p>密碼</p><input type="password" v-model="drowssap" placeholder="" autocomplete="off" />
+            <p>密碼</p><input type="password" v-model="password" placeholder="" autocomplete="off" />
             <button @click="login" type="button">登入</button>
         </div>
     </div>
@@ -14,10 +14,14 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const user = ref("");
-const drowssap = ref("");
+const password = ref("");
 
 function login() {
-    router.push("/system");
+    if(user.value.trim() === "hypons" && password.value.trim() === "1661") {
+        router.push("/system");
+    } else {
+        alert("帳號或密碼錯誤")
+    }
 }
 </script>
 

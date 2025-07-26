@@ -2,7 +2,7 @@
   <div id="system">
     <div class="buttonWrapper" @click="pickSystem('index')">
       <img class="buttonIcon" src="@/assets/image/blue.png"></img>
-      <p class="buttonText">3D系統</p>
+      <p class="buttonText">DEMO</p>
     </div>
     <div class="buttonWrapper" @click="pickSystem('other')">
       <img class="buttonIcon" src="@/assets/image/brown.png"></img>

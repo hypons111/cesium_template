@@ -61,7 +61,6 @@ async function addGLTF() {
   const model = settings.model;
   const set = currentModelSet.value;
   let entity = undefined;
-
   try {
     const modelSetting = model.ModalArray[set];
     let MODEL_URI = undefined;
@@ -112,6 +111,7 @@ async function addGLTF() {
     if (camera.zoomTo === "model") {
       viewer.trackedEntity = entity;
     } else if (camera.zoomTo === "coordinate") {
+      console.log(camera)
       const destination = Cesium.Cartesian3.fromDegrees(
         camera.x,
         camera.y,
@@ -125,6 +125,7 @@ async function addGLTF() {
       viewer.camera[camera.zoomType]({
         destination: destination,
         orientation: orientation,
+        duration: camera.flyDuration
       });
     }
   } catch (error) {
@@ -299,7 +300,7 @@ export async function addRectangleEntity_EXAMPLE() {
           rectangle.w,
           rectangle.s,
           rectangle.e,
-          rectangle.n
+          rectangle.n,
         ),
         material: Cesium.Color[rectangle.color].withAlpha(rectangle.opacity),
       },
@@ -457,6 +458,7 @@ export async function setCamera(cameraData) {
 
 /* 移動視角 */
 export async function flyCamera(cameraData) {
+  console.log(cameraData)
   cesiumMenuData.value.show = false;
   const destination = Cesium.Cartesian3.fromDegrees(
     cameraData.x,

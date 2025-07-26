@@ -2,7 +2,7 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
-    HEADER_TITLE: "TEMPLATE",
+    HEADER_TITLE: "DEMO",
     CURRENT_SECTION: "section1",
     CURRENT_MAIN_COMPONENT: "section1",
     ALL_MODEL: "ALL",

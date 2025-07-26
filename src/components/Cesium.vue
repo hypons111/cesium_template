@@ -1,18 +1,25 @@
 <template>
   <!-- 左上角 dropdown menu -->
   <div id="leftAside" class="aside">
+    <!-- :disabled="isDisablePrveModel" -->
+    <button @click="backTopPreviousModel">
+      <font-awesome-icon :icon="['fas', 'door-closed']" />返回上一層
+    </button>
+  </div>
+
+  <!-- <div id="leftAside" class="aside">
     <el-select class="el_select" v-model="value" :placeholder="placeholder" @change="switchModel(this)">
       <el-option v-for="item in leftAsideOptions" :key="item.label" :value="item.label" :label="item.label"
         :set="item.set" class="el_option">
       </el-option>
     </el-select>
-  </div>
+  </div> -->
 
   <!-- 右上角 button group -->
   <div id="rightAside" class="aside">
     <button @click="resetCamera"><font-awesome-icon :icon="['fas', 'door-closed']" />重設</button>
     <button @click="patrolHandler"><font-awesome-icon :icon="['fas', 'door-closed']" />巡邏</button>
-    <button @click="initialModel">初始化模型</button>
+    <button @click="initialModel"><font-awesome-icon :icon="['fas', 'door-closed']" />初始化模型</button>
   </div>
 
   <!-- cesium -->
@@ -57,51 +64,62 @@ import {
 import { settings } from "@/assets/javascript/cesiumSettings"
 
 const store = useStore();
-const placeholder = "請選擇"; //computed(() => store.getters.CURRENT_MODEL);
+// const placeholder = "請選擇"; //computed(() => store.getters.CURRENT_MODEL);
 const allModel = store.getters.ALL_MODEL;
 const leftAsideOptions = ref([]);
 const modalStatus = computed(() => store.getters.MODAL_STATUS);
 const currentModelSet = computed(() => store.getters.CURRENT_MODEL_SET);
 const modalArray = settings.model.ModalArray;
+const isDisablePrveModel = computed(() => store.getters.MODEL_BREADCRUMB.length === 1)
 
 onMounted(async () => {
   await initialCesium();
-  await fetchModelList();
+  // await fetchModelList();
   await addRectangleEntity_EXAMPLE();
   await addCircleEntity_EXAMPLE();
   await addEllipsoidEntity_EXAMPLE();
   await addPolylineEntity_EXAMPLE();
 });
 
-function fetchModelList() {
-  leftAsideOptions.value.push({ label: allModel });
-  modalArray[currentModelSet.value].forEach(({ label, file, set }) => {
-    leftAsideOptions.value.push({
-      label: label,
-      file: file,
-      set: set
-    })
-  })
+// function fetchModelList() {
+//   leftAsideOptions.value.push({ label: allModel });
+//   modalArray[currentModelSet.value].forEach(({ label, file, set }) => {
+//     leftAsideOptions.value.push({
+//       label: label,
+//       file: file,
+//       set: set
+//     })
+//   })
+// }
+
+function backTopPreviousModel() {
+  const previousLabel = store.getters.HEADER_TITLE;
+  const MODEL_BREADCRUMB = store.getters.MODEL_BREADCRUMB;
+  const previousModel = MODEL_BREADCRUMB.length === 1 ? "initial" : MODEL_BREADCRUMB.pop();
+  const currentModel = previousModel === "initial" ? previousModel : ""
+  store.commit("SET_HEADER_TITLE", previousLabel);
+  store.commit("SET_CURRENT_MODEL_SET", previousModel);
+  store.commit("SET_CURRENT_MODEL", currentModel);
 }
 
-function switchModel(t) {
-  const breadCrumb = store.getters.MODEL_BREADCRUMB;
-  if (t.value === allModel) {
-    store.commit("SET_CURRENT_MODEL", allModel);
-  } else {
-    breadCrumb.forEach(prop => {
-      if (modalArray.hasOwnProperty(prop)) {
-        const currentModel = settings.model.ModalArray.filter(({ label }) => label === t.value)[0];
-        store.commit("SET_CURRENT_MODEL", currentModel.label);
-      } else {
-        console.log(prop);
-      }
-    })
-  }
-}
+// function switchModel(t) {
+//   const breadCrumb = store.getters.MODEL_BREADCRUMB;
+//   if (t.value === allModel) {
+//     store.commit("SET_CURRENT_MODEL", allModel);
+//   } else {
+//     breadCrumb.forEach(prop => {
+//       if (modalArray.hasOwnProperty(prop)) {
+//         const currentModel = settings.model.ModalArray.filter(({ label }) => label === t.value)[0];
+//         store.commit("SET_CURRENT_MODEL", currentModel.label);
+//       } else {
+//         console.log(prop);
+//       }
+//     })
+//   }
+// }
 
 function initialModel() {
-  store.commit("SET_HEADER_TITLE", "TEMPLATE");
+  store.commit("SET_HEADER_TITLE", "DEMO");
   store.commit("SET_CURRENT_MODEL_SET", "initial");
   store.commit("SET_CURRENT_MODEL", "initial");
 }
@@ -132,42 +150,37 @@ function initialModel() {
   justify-content: space-between;
   align-items: center;
   margin: 0 0.5em;
+
+  button {
+    height: 2.25rem;
+    color: rgb(var(--CYAN));
+    padding: 0.5em;
+    background-color: rgba(var(--BLACK), 0.5);
+    border: 2px solid rgb(var(--CYAN));
+    border-radius: 0.25em;
+  }
 }
 
 #leftAside {
   top: 0;
   left: 0;
 
-  ::v-deep .el-select__wrapper {
-    height: 2.25rem;
-    font-size: 1em;
-    font-weight: bold;
-    box-shadow: none;
-    background-color: rgba(var(--BLACK), 0.5);
-    border: 2px solid rgb(var(--CYAN));
-    border-radius: 0.25em;
-
-    * {
-      color: rgb(var(--CYAN));
-    }
+  button {
+    margin-right: 1em;
   }
 }
 
 #rightAside {
   top: 0;
   right: 0;
-  justify-content: flex-start;
+  justify-content: flex-end;
 
   button {
-    height: 2.25rem;
-    color: rgb(var(--CYAN));
-    padding: 0.5em;
     margin-left: 1em;
-    background-color: rgba(var(--BLACK), 0.5);
-    border: 2px solid rgb(var(--CYAN));
-    border-radius: 0.25em;
   }
 }
+
+
 
 #menuContainer {
   position: absolute;

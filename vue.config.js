@@ -8,7 +8,7 @@ const cesiumSource = "node_modules/cesium/Source";
 const cesiumWorkers = "node_modules/cesium/Build/Cesium/Workers";
 
 module.exports = defineConfig({
-  outputDir: "TEMPLATE",
+  outputDir: "cesium_dev",
   publicPath: './',
   assetsDir: 'assets',
   indexPath: 'index.html',

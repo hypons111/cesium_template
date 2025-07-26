@@ -3,30 +3,32 @@ const settings = {
     ionDefaultAccessToken:
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNmNjZDdjOS05ZmFhLTQ3NTItOTI5OS00NDMzN2Y0MzQwMTIiLCJpZCI6MjIxNjQ5LCJpYXQiOjE3MTgxNjIxMTV9.8N1NuOLwQDadOEF4X0m2z9SiTCR0e5OFYWUNV5WWU1U",
     showEarth: true,
-    backgroundColor: "BLACK",
+    backgroundColor: "BLACK", // 要大階
     useGoogleMap: false,
     maximumZoomDistance: 10000000,
     minimumZoomDistance: 10
   },
   
+  /* 視角 初始設定 */
+  camera: {
+    zoomType: "setView",  // setView / flyTo
+    zoomTo: "coordinate", // coordinate / model(最後一個模型座標，適合無地圖時使用)
+    x: 121.5342,          // \
+    y: 25.287,            //  \
+    z: 600,               //   \
+    h: 0,                 //     zoomTo: "coordinate" 專用
+    p: -0.75,             //   /
+    r: 0,                 //  /
+    flyDuration: 10,      // /  
+  },
+  
+  /* 模型 初始設定 */
   model: {
-    modelType: "local",
+    modelType: "local", // 使用 local / ion(banned)
     ModalArray: {
       initial: [
         {
-          label: "碼頭",
-          file: "harbour",
-          set: "harbour",
-          x: 121.5372,
-          y: 25.29257,
-          z: 0,
-          h: 90,
-          p: 0,
-          r: 0,
-          s: 10.25
-        },
-        {
-          label: "大廈",
+          label: "building",
           file: "building",
           set: "building",
           x: 121.533,
@@ -36,7 +38,18 @@ const settings = {
           p: 0,
           r: 0,
           s: 3
-        }
+        },
+        // {
+        //   label: "harbour",
+        //   file: "harbour",
+        //   x: 121.5372,
+        //   y: 25.29257,
+        //   z: 0,
+        //   h: 90,
+        //   p: 0,
+        //   r: 0,
+        //   s: 10.25
+        // }
       ],
       building: [
         {
@@ -49,8 +62,7 @@ const settings = {
           p: 0,
           r: 0,
           s: 3
-        },
-        {
+        },{
           label: "1MF",
           file: "1MF",
           x: 121.533,
@@ -60,8 +72,7 @@ const settings = {
           p: 0,
           r: 0,
           s: 3
-        },
-        {
+        },{
           label: "2F",
           file: "2F",
           x: 121.533,
@@ -71,8 +82,7 @@ const settings = {
           p: 0,
           r: 0,
           s: 3
-        },
-        {
+        },{
           label: "3F",
           file: "3F",
           x: 121.533,
@@ -82,8 +92,7 @@ const settings = {
           p: 0,
           r: 0,
           s: 3
-        },
-        {
+        },{
           label: "4F",
           file: "4F",
           x: 121.533,
@@ -93,8 +102,7 @@ const settings = {
           p: 0,
           r: 0,
           s: 3
-        },
-        {
+        },{
           label: "RF",
           file: "RF",
           x: 121.533,
@@ -104,59 +112,44 @@ const settings = {
           p: 0,
           r: 0,
           s: 3
-        },
+        }
       ]
     },
   },
 
-  camera: {
-    zoomType: "setView",
-    zoomTo: "coordinate",
-    x: 121.5342,
-    y: 25.287,
-    z: 600,
-    h: 0,
-    p: -0.75,
-    r: 0,
-    flyDuration: 2, 
-    /* Forbidden */
-    // setOffset: 100, // set 專用 offset 鏡頭 offset 距離
-    // flyOffset: [0, 0, 0], // fly 專用 offset 鏡頭 offset 距離
-  },
-
+  /* 巡邏起點座標 */
   patrol: {
-    /* 巡邏起點座標 */
     x: 121.5342,
     y: 25.28835,
-    z: 700,
+    z: 100,
     h: 0,
-    p: -1,
+    p: 0,
     r: 0,
 
-    /* 巡邏點 */
+    /* 巡邏路線 */
     route: [
-      [0, 50],
-      [90, 25],
-      [-90, 10],
-      [0, 50],
-    ],
+      [0, 50], // 向前
+      [90, 0], // 轉左
+      [-90, 50] // 轉右 向前
+    ]
   },
 
+  /* 繪圖 袑始設定 */ 
   entity: {
     rectangleArray: [
       {
-        w: 121.58,
-        s: 25.04,
-        e: 121.59,
-        n: 25.059,
-        opacity: 0.5,
+        w: 121.5332,
+        s: 25.28734,
+        e: 121.5342,
+        n: 25.28834,
+        opacity: 1,
         color: "GREEN",
       },
       {
-        w: 121.59,
-        s: 25.05,
-        e: 121.6,
-        n: 25.06,
+        w: 121.5342,
+        s: 25.28744,
+        e: 121.5352,
+        n: 25.28844,
         opacity: 0.5,
         color: "BLUE",
       },
@@ -183,8 +176,9 @@ const settings = {
     ],
   },
 
+  /* 是否使用 hover 效果 */
   other: {
-    useHover: true,
+    useHover: false,
   },
 };
 
